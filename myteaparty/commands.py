@@ -52,8 +52,8 @@ def import_mariage_command(dry_run):
         tea_id_numeric = int(tea_id.strip('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
         return (tea_id, tea_id_numeric)
 
-    titlecase.set_small_word_list(titlecase.SMALL\
-            + '|un|une|de|des|du|d|le|la|les|au|à|a')
+    titlecase.set_small_word_list(titlecase.SMALL
+                                  + '|un|une|de|des|du|d|le|la|les|au|à|a')
 
     database.begin()
 
@@ -103,8 +103,9 @@ def import_mariage_command(dry_run):
         if s_menu_anchor:
             s_menu = s_menu_anchor.find(class_='s-menu_' + str(menu))
             if s_menu:
-                links.extend([l.get('href').replace('./', BASE_FR + '/')\
-                    for l in s_menu.findAll('a') if l.get('href') is not None])
+                links.extend([l.get('href').replace('./', BASE_FR + '/')
+                              for l in s_menu.findAll('a')
+                              if l.get('href') is not None])
 
     failed = []
     with click.progressbar(length=len(links) + 1,
@@ -220,10 +221,10 @@ def import_mariage_command(dry_run):
 
             long_descr_elmnt = soup.find(id='fiche_desc')
             if long_descr_elmnt:
-                long_description = UnicodeDammit(\
-                        soup.find(id='fiche_desc').encode_contents())\
-                            .unicode_markup.strip().replace('</br>', '')\
-                            .strip('<br/>').strip()
+                long_description = UnicodeDammit(
+                    soup.find(id='fiche_desc').encode_contents())\
+                    .unicode_markup.strip().replace('</br>', '')\
+                    .strip('<br/>').strip()
 
             tips_raw = None
             tips_mass = None
@@ -237,8 +238,8 @@ def import_mariage_command(dry_run):
 
             if tips_block:
                 tips_raw = tips_block.get_text()\
-                           .replace('CONSEILS DE PRÉPARATION :', '')\
-                           .strip()
+                    .replace('CONSEILS DE PRÉPARATION :', '')\
+                    .strip()
 
                 # We try to extract raw data.
                 # Usual format: "2,5 g / 20 cl - 95°C - 5 min"
@@ -250,28 +251,27 @@ def import_mariage_command(dry_run):
                                      .split(' - ')
 
                 for tips_part in tips_parts:
-                    tip_number = float(re_remove_non_numbers.sub('', tips_part))
+                    tip_num = float(re_remove_non_numbers.sub('', tips_part))
                     if 'cl' in tips_part:
-                        tips_volume = int(tip_number)
+                        tips_volume = int(tip_num)
                     elif 'c' in tips_part:
-                        tips_temperature = int(tip_number);
+                        tips_temperature = int(tip_num)
                     elif 'g' in tips_part:
-                        tips_mass = int(tip_number * 1000)
+                        tips_mass = int(tip_num * 1000)
                     elif 'min' in tips_part:
-                        tips_duration = int(tip_number * 60)
+                        tips_duration = int(tip_num * 60)
             else:
                 # Maybe another tips format found on some specific pages
                 tips_block = soup.find(id='fiche_suggestion')
                 if tips_block:
                     tips_raw = tips_block.get_text()\
-                                .replace('CONSEILS DE PRÉPARATION :', '')\
-                                .strip()
+                        .replace('CONSEILS DE PRÉPARATION :', '').strip()
 
             image_block = soup.find(id='A9', class_='valignmiddle')
             if image_block:
                 image_tag = image_block.find('img')
                 if image_tag and image_tag.get('src'):
-                    image = save_distant_file(BASE_FR + '/'\
+                    image = save_distant_file(BASE_FR + '/'
                                                       + image_tag.get('src'))
 
             # Update the thing
@@ -291,16 +291,16 @@ def import_mariage_command(dry_run):
             }
 
             query = Tea.update(**data)\
-                         .where((Tea.vendor_internal_id == tea_id_numeric)\
-                            & (Tea.vendor == vendor))
+                       .where((Tea.vendor_internal_id == tea_id_numeric)
+                              & (Tea.vendor == vendor))
             updated = query.execute()
 
             if updated == 0:
                 # We first check if this is really a new tea, or if the data
                 # was not changed at all.
                 new_tea = Tea.select()\
-                             .where((Tea.vendor_internal_id == tea_id_numeric)\
-                                & (Tea.vendor == vendor)).count() == 0
+                             .where((Tea.vendor_internal_id == tea_id_numeric)
+                                    & (Tea.vendor == vendor)).count() == 0
                 if new_tea:
                     # In case of an insertion, we add the slug and then check
                     # if the slug is unique
@@ -313,7 +313,7 @@ def import_mariage_command(dry_run):
                                 suffix += 1
                             else:
                                 data['slug'] = slug
-                                break;
+                                break
                     used_slugs.append(data['slug'])
                     teas_to_insert.append(data)
 

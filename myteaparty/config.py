@@ -11,6 +11,7 @@ DATABASE_BASE = 'teaparty'
 
 STATIC_FILES_FOLDER = 'r'
 
+
 # A random secret key
 
 SECRET_KEY = 'some random string here'
