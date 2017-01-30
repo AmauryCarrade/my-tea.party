@@ -1,0 +1,3 @@
+graft myteaparty/templates
+graft myteaparty/static
+include myteaparty/schema.sql
