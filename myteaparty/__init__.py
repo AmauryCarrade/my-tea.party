@@ -1,1 +1,1 @@
-from .teaparty import app
+from .teaparty import app  # noqa

@@ -13,4 +13,9 @@ setup(
         'python-slugify',
         'titlecase'
     ],
+    extras_require={
+        'dev': [
+            'flake8'
+        ]
+    }
 )

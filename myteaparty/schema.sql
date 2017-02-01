@@ -83,6 +83,41 @@ CREATE TABLE IF NOT EXISTS `tea_teas` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tea_teas_types`
+--
+
+CREATE TABLE IF NOT EXISTS `tea_teas_types` (
+  `tea_id` int(11) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  PRIMARY KEY (`tea_id`,`type_id`),
+  KEY `type_id` (`type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `tea_teas_types`:
+--   `type_id`
+--       `tea_types` -> `id`
+--   `tea_id`
+--       `tea_teas` -> `id`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tea_types`
+--
+
+CREATE TABLE IF NOT EXISTS `tea_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tea_vendors`
 --
 
@@ -115,4 +150,10 @@ ALTER TABLE `tea_lists_items`
 ALTER TABLE `tea_teas`
   ADD CONSTRAINT `tea_teas_ibfk_1` FOREIGN KEY (`vendor`) REFERENCES `tea_vendors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+--
+-- Constraints for table `tea_teas_types`
+--
+ALTER TABLE `tea_teas_types`
+  ADD CONSTRAINT `tea_teas_types_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `tea_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tea_teas_types_ibfk_1` FOREIGN KEY (`tea_id`) REFERENCES `tea_teas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;

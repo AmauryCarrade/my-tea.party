@@ -1,4 +1,5 @@
-from peewee import *
+from peewee import MySQLDatabase, Model, CharField, TextField, IntegerField, FloatField, DateTimeField, \
+                   ForeignKeyField, CompositeKey
 from .teaparty import app
 
 database = MySQLDatabase(app.config['DATABASE_BASE'], **{
@@ -18,14 +19,6 @@ class BaseModel(Model):
         database = database
 
 
-class TeaList(BaseModel):
-    creator_ip = CharField()
-    key = CharField(unique=True)
-
-    class Meta:
-        db_table = 'tea_lists'
-
-
 class TeaVendor(BaseModel):
     description = CharField()
     link = CharField()
@@ -38,6 +31,14 @@ class TeaVendor(BaseModel):
         indexes = (
             (('name', 'link'), True),
         )
+
+
+class TeaType(BaseModel):
+    name = CharField(unique=True)
+    order = IntegerField()
+
+    class Meta:
+        db_table = 'tea_types'
 
 
 class Tea(BaseModel):
@@ -57,12 +58,28 @@ class Tea(BaseModel):
     tips_temperature = IntegerField(null=True)
     tips_volume = IntegerField(null=True)
     updated = DateTimeField()
-    vendor = ForeignKeyField(db_column='vendor', rel_model=TeaVendor,
-                             to_field='id')
+    vendor = ForeignKeyField(db_column='vendor', rel_model=TeaVendor, to_field='id')
     vendor_internal_id = CharField(null=True, db_column='vendor_id')
 
     class Meta:
         db_table = 'tea_teas'
+
+
+class TypeOfATea(BaseModel):
+    tea = ForeignKeyField(db_column='tea_id', rel_model=Tea, to_field='id')
+    tea_type = ForeignKeyField(db_column='type_id', rel_model=TeaType, to_field='id')
+
+    class Meta:
+        db_table = 'tea_teas_types'
+        primary_key = CompositeKey('tea', 'tea_type')
+
+
+class TeaList(BaseModel):
+    creator_ip = CharField()
+    key = CharField(unique=True)
+
+    class Meta:
+        db_table = 'tea_lists'
 
 
 class TeaListItem(BaseModel):
