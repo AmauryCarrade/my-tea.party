@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `tea_teas` (
   `tips_temperature` smallint(6) DEFAULT NULL COMMENT 'The advised temperature in °C',
   `tips_duration` smallint(6) DEFAULT NULL COMMENT 'The advised duration in seconds',
   `illustration` varchar(70) CHARACTER SET utf8 DEFAULT NULL COMMENT 'A reference to the tea illustration',
-  `price` float DEFAULT NULL COMMENT 'The price as seen in the vendor page',
+  `price` float DEFAULT NULL COMMENT 'The price as seen in the vendor page (euros)',
   `price_unit` varchar(100) CHARACTER SET utf8 DEFAULT NULL COMMENT 'The amount of tea sold for the stored price (e.g. “100 g.”)',
   `link` varchar(256) CHARACTER SET utf8 NOT NULL COMMENT 'A link to the tea vendor page',
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'The last crawl date',

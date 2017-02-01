@@ -314,6 +314,29 @@ def import_mariage_command(dry_run):
                 if image_tag and image_tag.get('src'):
                     image = save_distant_file(BASE_FR + '/' + image_tag.get('src'))
 
+            # Retrives price
+
+            price = None
+            price_unit = None
+
+            price_block = soup.find(id='fiche_ref_div')
+            # Raw format of this block: "Ref : T8201&nbsp;&nbsp;-&nbsp;&nbsp;Prix : 8€ / 100g"
+            if price_block:
+                price_raw = price_block.get_text().replace('&nbsp;', '').split('-')
+                if len(price_raw) >= 2:
+                    price_raw = price_raw[1].strip().split(':')
+                    price_raw = price_raw[1] if len(price_raw) >= 2 else price_raw[0]
+                    if '/' in price_raw:
+                        price_raw = price_raw.split('/')
+                        price = price_raw[0].strip()
+                        price_unit = price_raw[1].strip()
+                    else:
+                        price = price_raw.strip()
+                        price_unit = 'boîte'
+
+            if price:
+                price = float(re_remove_non_numbers.sub('', price))
+
             # Retrives tea types
 
             tea_tags = [tag.get_text().strip('#').strip().lower() for tag in soup.select('#A11 a.fiche_ref_lien')]
@@ -339,6 +362,8 @@ def import_mariage_command(dry_run):
                 'tips_volume': tips_volume,
                 'tips_duration': tips_duration,
                 'illustration': image,
+                'price': price,
+                'price_unit': price_unit,
                 'link': tea_link
             }
 
@@ -391,7 +416,8 @@ def import_mariage_command(dry_run):
 
         # Insertion of types
         types_insert = []
-        for tea in Tea.select(Tea.id, Tea.vendor_internal_id).where(Tea.vendor_internal_id << types_to_insert.keys()):
+        for tea in Tea.select(Tea.id, Tea.vendor_internal_id).where(Tea.vendor_internal_id <<
+                                                                    list(types_to_insert.keys())):
             for tea_type in types_to_insert[tea.vendor_internal_id]:
                 types_insert.append({'tea': tea, 'tea_type': tea_type})
         TypeOfATea.insert_many(types_insert).execute()
