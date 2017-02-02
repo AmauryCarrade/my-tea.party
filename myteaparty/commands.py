@@ -36,23 +36,23 @@ def get_tea_types():
     instance, and as second, a list of names to be found in the pages
     to ckeck if the tea is this type.
     """
-    black, _ = TeaType.get_or_create(name='Thé noir')
-    green, _ = TeaType.get_or_create(name='Thé vert')
-    white, _ = TeaType.get_or_create(name='Thé blanc')
-    matured, _ = TeaType.get_or_create(name='Thé mûr')
-    yellow, _ = TeaType.get_or_create(name='Thé jaune')
-    blue, _ = TeaType.get_or_create(name='Thé bleu')
-    smoked, _ = TeaType.get_or_create(name='Thé fûmé')
-    red, _ = TeaType.get_or_create(name='Thé rouge')
-    jasmin, _ = TeaType.get_or_create(name='Thé au Jasmin')
-    fruit, _ = TeaType.get_or_create(name='Infusion')
+    finest, _ = TeaType.get_or_create(name='Grand cru', slug='grand-cru', is_origin=False)
+    black, _ = TeaType.get_or_create(name='Thé noir', slug='noir', is_origin=False)
+    green, _ = TeaType.get_or_create(name='Thé vert', slug='vert', is_origin=False)
+    white, _ = TeaType.get_or_create(name='Thé blanc', slug='blanc', is_origin=False)
+    matured, _ = TeaType.get_or_create(name='Thé mûr', slug='mur', is_origin=False)
+    yellow, _ = TeaType.get_or_create(name='Thé jaune', slug='jaune', is_origin=False)
+    blue, _ = TeaType.get_or_create(name='Thé bleu', slug='bleu', is_origin=False)
+    smoked, _ = TeaType.get_or_create(name='Thé fûmé', slug='fume', is_origin=False)
+    red, _ = TeaType.get_or_create(name='Thé rouge', slug='rouge', is_origin=False)
+    jasmin, _ = TeaType.get_or_create(name='Thé au Jasmin', slug='jasmin', is_origin=False)
+    fruit, _ = TeaType.get_or_create(name='Infusion', slug='infusion', is_origin=False)
 
-    finest, _ = TeaType.get_or_create(name='Grand cru')
-    darjeeling, _ = TeaType.get_or_create(name='Darjeeling')
-    assam, _ = TeaType.get_or_create(name='Assam')
-    ceylan, _ = TeaType.get_or_create(name='Ceylan')
-    china, _ = TeaType.get_or_create(name='Thé de Chine')
-    japan, _ = TeaType.get_or_create(name='Thé du Japon')
+    darjeeling, _ = TeaType.get_or_create(name='Darjeeling', slug='darjeeling', is_origin=True)
+    assam, _ = TeaType.get_or_create(name='Assam', slug='assam', is_origin=True)
+    ceylan, _ = TeaType.get_or_create(name='Ceylan', slug='ceylan', is_origin=True)
+    china, _ = TeaType.get_or_create(name='Thé de Chine', slug='chine', is_origin=True)
+    japan, _ = TeaType.get_or_create(name='Thé du Japon', slug='japon', is_origin=True)
 
     return [
         (black, ['Thé noir']),

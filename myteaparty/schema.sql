@@ -110,9 +110,12 @@ CREATE TABLE IF NOT EXISTS `tea_teas_types` (
 CREATE TABLE IF NOT EXISTS `tea_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `is_origin` tinyint(1) NOT NULL DEFAULT '0',
   `order` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

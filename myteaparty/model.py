@@ -1,5 +1,5 @@
 from peewee import MySQLDatabase, Model, CharField, TextField, IntegerField, FloatField, DateTimeField, \
-                   ForeignKeyField, CompositeKey
+                   BooleanField, ForeignKeyField, CompositeKey
 from .teaparty import app
 
 database = MySQLDatabase(app.config['DATABASE_BASE'], **{
@@ -35,6 +35,8 @@ class TeaVendor(BaseModel):
 
 class TeaType(BaseModel):
     name = CharField(unique=True)
+    slug = CharField(unique=True)
+    is_origin = BooleanField()
     order = IntegerField()
 
     class Meta:
