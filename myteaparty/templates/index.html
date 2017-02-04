@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% import 'macros/files.html' as files %}
+
+
+{% block javascripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='assets/js/time-counters.js') }}"></script>
+{% endblock %}
+
+
+{% block hero_classes %}is-medium{% endblock %}
+
+{% block hero_body %}
+<div class="hero-body">
+    <div class="container has-text-centered main-search-input-column">
+        <form class="main-tea-search" action="tea.html">
+            <div class="control main-search-input-container">
+                <label class="sr-only" for="search_tea">Rechercher le nom d'un thé...</label>
+                <input type="search" class="big-search-input" id="search_tea" name="tea" placeholder="Rechercher le nom d'un thé..." />
+                <button type="submit">
+                    <span class="fa fa-search"></span>
+                    <span class="sr-only">Rechercher</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<section id="favorite-teas">
+    <div class="container">
+        <div class="columns is-multiline">
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
+                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
+                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
+                            </div>
+                            <h3><a href="tea.html">Thé des impressionnistes</a></h3>
+                            <p>Thé vert parfumé, goût fleuri &amp; vanillé</p>
+                            <ul>
+                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
+                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
+                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item button-progress" data-time="180" data-name="Thé des impressionnistes">
+                            <span class="button-progress-label">Lancer l'infusion</span>
+                            <span class="button-progress-bar"></span>
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
+                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
+                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
+                            </div>
+                            <h3><a href="#">Iskandar</a></h3>
+                            <p>Thé vert aux notes veloutées de violette</p>
+                            <ul>
+                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
+                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
+                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item button-progress" data-time="180" data-name="Iskandar">
+                            <span class="button-progress-label">Lancer l'infusion</span>
+                            <span class="button-progress-bar"></span>
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
+                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
+                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
+                            </div>
+                            <h3><a href="#">Thé à l'Opéra</a></h3>
+                            <p>Thé vert au goût de vanille &amp; de fruits rouges</p>
+                            <ul>
+                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
+                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
+                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item button-progress" data-time="180" data-name="Thé à l'Opéra">
+                            <span class="button-progress-label">Lancer l'infusion</span>
+                            <span class="button-progress-bar"></span>
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
+                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
+                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
+                            </div>
+                            <h3><a href="#">Thé sur le Nil</a></h3>
+                            <p>Thé vert au parfum fruité &amp; citronné</p>
+                            <ul>
+                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
+                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
+                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item button-progress" data-time="180" data-name="Thé sur le Nil">
+                            <span class="button-progress-label">Lancer l'infusion</span>
+                            <span class="button-progress-bar"></span>
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
+                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
+                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
+                            </div>
+                            <h3><a href="#">Noël Bleu</a></h3>
+                            <p>Thé Bleu écorces d'orange, vanille &amp; cannelle</p>
+                            <ul>
+                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 3 g pour 20 cl.</li>
+                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
+                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item button-progress" data-time="180" data-name="Noël Bleu">
+                            <span class="button-progress-label">Lancer l'infusion</span>
+                            <span class="button-progress-bar"></span>
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-one-third">
+                <div class="card no-tea-left">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
+                                <a href="#" title="Ce thé n'est plus épuisé" aria-label="Ce thé n'est plus épuisé"><span class="fa fa-trash"></span></a>
+                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
+                            </div>
+                            <h3><a href="#">Chandernagor</a><span class="tag is-dark">Épuisé</span></h3>
+                            <p>CHAÏ - Thé noir aux épices impériales</p>
+                            <ul>
+                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
+                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
+                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 5 min.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item button-progress" data-time="300" data-name="Chandernagor">
+                            <span class="button-progress-label">Lancer l'infusion</span>
+                            <span class="button-progress-bar"></span>
+                        </a>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

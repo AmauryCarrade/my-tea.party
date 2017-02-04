@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{% block title %}{% endblock %}My Tea Party</title>
+
+    <link href="{{ url_for('static', filename='assets/vendor/css/bulma.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/vendor/css/ie10-viewport-bug-workaround.css') }}" rel="stylesheet" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/css/font-awesome.min.css') }}" />
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link href="{{ url_for('static', filename='assets/css/bulma_colors.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/css/site.css') }}" rel="stylesheet" />
+
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body>
+    {% block hero %}
+    <section class="hero is-primary {% block hero_classes %}{% endblock %}" {% block hero_attributes %}{% endblock %}>
+        {% block hero_head %}
+        <div class="hero-head">
+            <header class="nav">
+                <div class="container">
+                    <div class="nav-left is-hidden-mobile">
+                        {% block menu_left %}
+                        <a href="list.html" class="nav-item">Tous les thés</a>
+                        <a href="list.html" class="nav-item">Origines</a>
+                        {% endblock %}
+                    </div>
+                    <div class="nav-center is-hidden-mobile">
+                        {% block menu_center %}
+                        <h1><a href="{{ url_for('homepage') }}"><span class="fa fa-coffee"></span></a></h1>
+                        {% endblock %}
+                    </div>
+                    <div class="nav-right is-hidden-mobile">
+                        {% block menu_right %}{% endblock %}
+                    </div>
+
+                    <div class="nav-left is-hidden-tablet">
+                        {% block menu_left_mobile %}
+                        {{ self.menu_center() }}
+                        {% endblock %}
+                    </div>
+                    <div class="nav-right is-hidden-tablet">
+                        {% block menu_right_mobile %}
+                        {{ self.menu_left() }}
+                        {% endblock %}
+                    </div>
+                </div>
+            </header>
+        </div>
+        {% endblock %}
+
+        {% block hero_body %}{% endblock %}
+
+        {% block hero_foot %}{% endblock %}
+    </section>
+    {% endblock %}
+
+    {% block content %}{% endblock %}
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

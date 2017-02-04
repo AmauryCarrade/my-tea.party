@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% import 'macros/files.html' as files %}
+
+
+{% block title %}{{ tea.name }}&nbsp;&nbsp;&middot;&nbsp;&nbsp;{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='assets/js/time-counters.js') }}"></script>
+{% endblock %}
+
+
+{% block menu_right %}
+<form class="main-tea-search main-tea-search-inmenu nav-item" action="tea.html">
+    <div class="control main-search-input-container">
+        <label class="sr-only" for="search_tea">Rechercher le nom d'un thé...</label>
+        <input type="search" class="big-search-input" id="search_tea" name="tea" placeholder="Rechercher..." />
+        <button type="submit">
+            <span class="fa fa-search"></span>
+            <span class="sr-only">Rechercher</span>
+        </button>
+    </div>
+</form>
+{% endblock %}
+
+{% block menu_right_mobile %}
+    {{ self.menu_right() }}
+{% endblock %}
+
+
+{% block hero_attributes %}id="hero-tea"{% endblock %}
+
+{% block hero_body %}
+<div class="hero-body">
+    <div class="container">
+        <div class="columns is-vcentered">
+            <div class="column tea-title">
+                <h1 class="title">
+                    {{ tea.name }}
+                    <span class="is-hidden-mobile">
+                        <dfn class="tooltip tooltip-icon-title" aria-label="Ajouter aux favoris">
+                            <a class="icon is-medium"><span class="fa fa-star-o"></span></a>
+                        </dfn>
+                    </span>
+                </h1>
+                <h2 class="subtitle">{{ tea.description }}</h2>
+                <aside class="is-hidden-tablet">
+                    <a class="icon is-medium"><span class="fa fa-star-o"></span></a>
+                </aside>
+            </div>
+            <div class="column is-narrow tea-title-aside">
+                <div class="box tea-icon">
+                    <img alt="Illustration : {{ tea.name.lower() }}" src="{{ files.external(tea.illustration) }}" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<section id="tea-details">
+    <div class="container">
+        <div class="box">
+            <div class="columns">
+                <div class="column is-5 tea-tips">
+                    {% if tea.tips_duration %}
+                    <aside class="is-hidden-tablet tea-actions">
+                        <section class="tea-timer">
+                            <a class="button button-progress is-primary is-medium tea-timer-button" data-time="{{ tea.tips_duration }}" data-name="{{ tea.name }}">
+                                <span class="button-progress-label">Lancer l'infusion</span>
+                                <span class="button-progress-bar"></span>
+                            </a>
+                        </section>
+                    </aside>
+                    {% endif %}
+
+                    <dl class="tips">
+                        {% if tea.tips_mass %}
+                        <dt>Quantité par infusion</dt>
+                        <dd>{{ tea.tips_mass / 1000 }} g {% if tea.tips_volume %}<span class="text-muted">pour</span> {{ tea.tips_volume }} cl{% endif %}</dd>
+                        {% endif %}
+
+                        {% if tea.tips_temperature %}
+                        <dt>Température d'infusion</dt>
+                        <dd>{{ tea.tips_temperature }} °C</dd>
+                        {% endif %}
+
+                        {% if tea.tips_duration %}
+                        <dt>Durée d'infusion</dt>
+                        <dd>{{ tea.tips_duration // 60 }} minute{% if tea.tips_duration >= 120 %}s{% endif %}</dd>
+                        {% endif %}
+
+                        {% if not (tea.tips_mass and tea.tips_temperature and tea.tips_duration) %}
+                        <dt>Conseils de préparation</dt>
+                        <dd class="tips_raw">{{ tea.tips_raw.replace('\r\n', '<br />').replace('\r', '<br />').replace('\n', '<br />')|safe }}</dd>
+                        {% endif %}
+                    </dl>
+
+                    {% if tea.tips_duration %}
+                    <aside class="is-hidden-mobile tea-actions">
+                        <section class="tea-timer">
+                            <a class="button button-progress is-primary is-medium tea-timer-button" data-time="{{ tea.tips_duration }}" data-name="{{ tea.name }}">
+                                <span class="button-progress-label">Lancer l'infusion</span>
+                                <span class="button-progress-bar"></span>
+                            </a>
+                        </section>
+                    </aside>
+                    {% endif %}
+                </div>
+                <div class="column tea-about">
+                    <aside class="tea-types is-hidden-mobile">
+                        {% for type in tea_types %}
+                            <a href="{{ type.slug }}"><span class="tag">{{ type.name }}</span></a>
+                        {% endfor %}
+                    </aside>
+
+                    <h3 class="title is-4">À propos de ce thé</h3>
+                    <article class="content">
+                        {{ tea.long_description|safe }}
+                    </article>
+
+                    <aside class="tea-source">
+                        <p>
+                            Ce thé est une création de <a href="{{ tea.link }}" rel="nofollow">{{ tea.vendor.name }}</a>.<br />
+                            <span class="last-update">
+                                Les données de cette page ont été récupérées le {{ tea.updated.strftime('%d/%m/%Y') }}.
+                                {% if tea.deleted %}
+                                <br />Ce thé a été depuis supprimé du site web de {{ tea.vendor.name }}. Il est conservé ici à titre d'archive.
+                                {% endif %}
+                            </span>
+                        </p>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
