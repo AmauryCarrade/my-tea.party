@@ -94,7 +94,9 @@
 
                         {% if not (tea.tips_mass and tea.tips_temperature and tea.tips_duration) %}
                         <dt>Conseils de préparation</dt>
-                        <dd class="tips_raw">{{ tea.tips_raw.replace('\r\n', '<br />').replace('\r', '<br />').replace('\n', '<br />')|safe }}</dd>
+                        <dd{% if '\r' in tea.tips_raw or '\n' in tea.tips_raw %} class="tips_raw"{% endif %}>
+                            {{ tea.tips_raw.replace('\r\n', '<br />').replace('\r', '<br />').replace('\n', '<br />')|safe }}
+                        </dd>
                         {% endif %}
                     </dl>
 
@@ -123,7 +125,11 @@
 
                     <aside class="tea-source">
                         <p>
-                            Ce thé est une création de <a href="{{ tea.link }}" rel="nofollow">{{ tea.vendor.name }}</a>.<br />
+                            Ce thé est une création de <a href="{{ tea.link }}" rel="nofollow">{{ tea.vendor.name }}</a>.
+                            {% if tea.price -%}
+                                Il est vendu {{ tea.price|int }} € {% if tea.price_unit[:2].isdigit() %}pour{% else %}par{% endif %} {{ tea.price_unit }}.
+                            {%- endif -%}
+                            <br />
                             <span class="last-update">
                                 Les données de cette page ont été récupérées le {{ tea.updated.strftime('%d/%m/%Y') }}.
                                 {% if tea.deleted %}

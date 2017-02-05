@@ -21,8 +21,7 @@ def tea(tea_vendor, tea_slug):
 
     tea_types = (TeaType.select(TeaType.name, TeaType.slug)
                  .join(TypeOfATea)
-                 .where(TypeOfATea.tea == tea)
-                 .execute())
+                 .where(TypeOfATea.tea == tea))
 
     return render_template('tea.html', tea=tea, tea_types=tea_types)
 
