@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% import 'macros/files.html' as files %}
+{% import 'macros/teas.html' as tea_utils %}
+
+{% block hero_attributes %}id="hero-list"{% endblock %}
+
+{% block content %}
+<section id="teas-list">
+    <div class="container">
+        {% if teas %}
+        <div class="columns is-multiline">
+            {% for tea in teas.dicts() %}
+
+                <div class="column is-half">
+                    <div class="card tea-list-item">
+                        <a href="{{ url_for('tea', tea_vendor=tea.vendor_slug, tea_slug=tea.slug) }}">
+                            <div class="card-image media-left media is-pulled-left">
+                                <figure class="image">
+                                    <img src="{{ files.external(tea.illustration) }}" alt="{{ tea.name }}" />
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="content">
+                                    <h3>{{ tea.name }}</h3>
+                                    <p>{{ tea.description }}</p>
+                                    <ul class="tea-tips-list">
+                                        {{ tea_utils.list_tea_tips(tea) }}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="is-clearfix"></div>
+                        </a>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+        {% endif %}
+
+
+        {% if pagination and pagination.pages > 1%}
+            {% with page=pagination.page, pages=pagination.pages %}
+                <nav class="pagination is-centered">
+                    <a class="pagination-previous icon{% if page == 1 %} is-disabled{% endif %}"{% if page != 1 %} href="{{ update_query(page=1) }}"{% endif %}>
+                        <span class="sr-only">Page précédente</span>
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                    </a>
+                    <a class="pagination-next icon{% if page == pages %} is-disabled{% endif %}"{% if page != pages %} href="{{ update_query(page=(page + 1)) }}"{% endif %}>
+                        <span class="sr-only">Page suivante</span>
+                        <span class="fa fa-arrow-right" aria-hidden="true"></span>
+                    </a>
+                    <ul class="pagination-list">
+                        {% if page > 3 %}
+                            <li><a class="pagination-link" href="?page=1">1</a></li>
+                            {% if page > 4 %}
+                                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                            {% endif %}
+                        {% endif %}
+
+                        {% for dpage in range(page - 2, page + 3) if dpage >= 1 and dpage <= pages %}
+                            <li>
+                                <a class="pagination-link{% if dpage == page %} is-current{% endif %}" href="{{ update_query(page=dpage) }}">
+                                    {{ dpage }}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                        {% if page <= pages - 3 %}
+                            {% if page != pages - 2 and page != pages - 3 %}
+                                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                            {% endif %}
+                            <li><a class="pagination-link" href="{{ update_query(page=pages) }}">{{ pages }}</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endwith %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

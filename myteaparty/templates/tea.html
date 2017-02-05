@@ -11,10 +11,10 @@
 
 
 {% block menu_right %}
-<form class="main-tea-search main-tea-search-inmenu nav-item" action="tea.html">
+<form class="main-tea-search main-tea-search-inmenu nav-item" action="{{ url_for('search') }}">
     <div class="control main-search-input-container">
         <label class="sr-only" for="search_tea">Rechercher le nom d'un thé...</label>
-        <input type="search" class="big-search-input" id="search_tea" name="tea" placeholder="Rechercher..." />
+        <input type="search" class="big-search-input" id="search_tea" name="q" placeholder="Rechercher..." />
         <button type="submit">
             <span class="fa fa-search"></span>
             <span class="sr-only">Rechercher</span>

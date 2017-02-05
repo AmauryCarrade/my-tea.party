@@ -1,0 +1,19 @@
+{% macro list_tea_tips(tea) -%}
+    {% if tea.tips_mass %}
+        <li title="Quantité de thé">
+            <span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span>
+            {{ tea.tips_mass / 1000 }} g {% if tea.tips_volume %}pour {{ tea.tips_volume }} cl.{% endif %}
+        </li>
+    {% endif %}
+    {% if tea.tips_temperature %}
+        <li title="Température d'infusion">
+            <span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span>
+            {{ tea.tips_temperature }} °C
+        </li>
+    {% endif %}
+    {% if tea.tips_duration %}
+        <li title="Durée d'infusion">
+            <span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span>
+            {{ tea.tips_duration // 60 }} min.</li>
+    {% endif %}
+{%- endmacro %}

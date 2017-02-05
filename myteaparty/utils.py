@@ -2,6 +2,8 @@ import os
 import requests
 import hashlib
 
+from flask import request
+from werkzeug import url_encode
 from .teaparty import app
 
 
@@ -31,3 +33,17 @@ def save_distant_file(url):
         f.write(file_content)
 
     return file_name
+
+
+@app.template_global()
+def update_query(**new_values):
+    """
+    Modifies and returns the current page's query string
+    by adding or replacing the given values.
+    """
+    args = request.args.copy()
+
+    for key, value in new_values.items():
+        args[key] = value
+
+    return '{}?{}'.format(request.path, url_encode(args))
