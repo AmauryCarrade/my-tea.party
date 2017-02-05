@@ -105,7 +105,7 @@ def import_mariage_command(dry_run):
     mf_logo = save_distant_file('https://upload.wikimedia.org/wikipedia/commons/a/ad/Logo_seul.jpg')
     vendor, _ = TeaVendor.get_or_create(
         name='Mariage Frères',
-        slug='mariage-freres',
+        slug='mf',
         defaults={
             'description': 'Thé français depuis 1854',
             'link': BASE_URL,
