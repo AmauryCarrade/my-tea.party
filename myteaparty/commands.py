@@ -36,42 +36,29 @@ def get_tea_types():
     instance, and as second, a list of names to be found in the pages
     to ckeck if the tea is this type.
     """
-    finest, _ = TeaType.get_or_create(name='Grand cru', slug='grand-cru', is_origin=False)
-    black, _ = TeaType.get_or_create(name='Thé noir', slug='noir', is_origin=False)
-    green, _ = TeaType.get_or_create(name='Thé vert', slug='vert', is_origin=False)
-    white, _ = TeaType.get_or_create(name='Thé blanc', slug='blanc', is_origin=False)
-    matured, _ = TeaType.get_or_create(name='Thé mûr', slug='mur', is_origin=False)
-    yellow, _ = TeaType.get_or_create(name='Thé jaune', slug='jaune', is_origin=False)
-    blue, _ = TeaType.get_or_create(name='Thé bleu', slug='bleu', is_origin=False)
-    smoked, _ = TeaType.get_or_create(name='Thé fûmé', slug='fume', is_origin=False)
-    red, _ = TeaType.get_or_create(name='Thé rouge', slug='rouge', is_origin=False)
-    jasmin, _ = TeaType.get_or_create(name='Thé au Jasmin', slug='jasmin', is_origin=False)
-    fruit, _ = TeaType.get_or_create(name='Infusion', slug='infusion', is_origin=False)
-
-    darjeeling, _ = TeaType.get_or_create(name='Darjeeling', slug='darjeeling', is_origin=True)
-    assam, _ = TeaType.get_or_create(name='Assam', slug='assam', is_origin=True)
-    ceylan, _ = TeaType.get_or_create(name='Ceylan', slug='ceylan', is_origin=True)
-    china, _ = TeaType.get_or_create(name='Thé de Chine', slug='chine', is_origin=True)
-    japan, _ = TeaType.get_or_create(name='Thé du Japon', slug='japon', is_origin=True)
+    def get_or_create(*args, **kwargs):
+        return TeaType.get_or_create(*args, **kwargs)[0]
 
     return [
-        (black, ['Thé noir']),
-        (green, ['Thé vert']),
-        (white, ['Thé blanc']),
-        (matured, ['Thé mûr', 'Thé mur', 'Pu-erh', 'Puerh']),
-        (yellow, ['Thé jaune']),
-        (blue, ['Thé bleu']),
-        (red, ['Thé rouge', 'Thé rouge sans théine', 'sans théine']),
-        (smoked, ['Thé fûmé', 'Thé fumé']),
-        (jasmin, ['Thé au jasmin', 'Jasmin']),
-        (fruit, ['Infusion', 'Infusion de fruits']),
+        (get_or_create(name='Thé noir', slug='noir', is_origin=False), ['Thé noir']),
+        (get_or_create(name='Thé vert', slug='vert', is_origin=False), ['Thé vert']),
+        (get_or_create(name='Thé blanc', slug='blanc', is_origin=False), ['Thé blanc']),
+        (get_or_create(name='Thé mûr', slug='mur', is_origin=False), ['Thé mûr', 'Thé mur', 'Pu-erh', 'Puerh']),
+        (get_or_create(name='Thé jaune', slug='jaune', is_origin=False), ['Thé jaune']),
+        (get_or_create(name='Thé bleu', slug='bleu', is_origin=False), ['Thé bleu']),
+        (get_or_create(name='Thé rouge', slug='rouge', is_origin=False), ['Thé rouge', 'Thé rouge sans théine',
+                                                                          'sans théine']),
+        (get_or_create(name='Thé fûmé', slug='fume', is_origin=False), ['Thé fûmé', 'Thé fumé']),
+        (get_or_create(name='Thé au Jasmin', slug='jasmin', is_origin=False), ['Thé au jasmin', 'Jasmin']),
+        (get_or_create(name='Infusion', slug='infusion', is_origin=False), ['Infusion', 'Infusion de fruits']),
 
-        (finest, ['Grand cru']),
-        (darjeeling, ['Darjeeling', 'Darjeeling de Printemps', 'Darjeeling d\'Été']),
-        (assam, ['Assam', 'Assam d\'Été']),
-        (ceylan, ['Ceylan']),
-        (china, ['Thé de Chine', 'Chine']),
-        (japan, ['Japon'])
+        (get_or_create(name='Grand cru', slug='grand-cru', is_origin=False), ['Grand cru']),
+        (get_or_create(name='Darjeeling', slug='darjeeling', is_origin=True), ['Darjeeling', 'Darjeeling de Printemps',
+                                                                               'Darjeeling d\'Été']),
+        (get_or_create(name='Assam', slug='assam', is_origin=True), ['Assam', 'Assam d\'Été']),
+        (get_or_create(name='Ceylan', slug='ceylan', is_origin=True), ['Ceylan']),
+        (get_or_create(name='Thé de Chine', slug='chine', is_origin=True), ['Thé de Chine', 'Chine']),
+        (get_or_create(name='Thé du Japon', slug='japon', is_origin=True), ['Japon'])
     ]
 
 
