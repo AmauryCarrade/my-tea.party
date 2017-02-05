@@ -1,0 +1,38 @@
+{% extends 'base_list.html' %}
+
+{% block hero_body %}
+<div class="hero-body">
+    <div class="container">
+        <div class="columns is-vcentered">
+            <div class="column tea-title">
+                <h1 class="title">{{ tea_type.name }}</h1>
+            </div>
+            <div class="column is-narrow is-5 is-hidden-mobile main-search-input-column">
+                <form class="main-tea-search" action="{{ url_for('search') }}">
+                    <div class="control main-search-input-container">
+                        <label class="sr-only" for="search_tea">Rechercher le nom ou le numéro d'un thé...</label>
+                        <input type="search" class="big-search-input" id="search_tea" name="q" placeholder="Rechercher..." />
+                        <button type="submit">
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block hero_foot %}
+<div class="hero-foot">
+    <nav class="tabs is-boxed is-fullwidth">
+        <div class="container">
+            <ul>
+                {% for type in types %}
+                    <li {% if type == tea_type %}class="is-active"{% endif %}><a href="{{ url_for('by_type', tea_type_slug=type.slug) }}">{{ type.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endblock %}

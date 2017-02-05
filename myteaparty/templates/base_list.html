@@ -10,11 +10,11 @@
     <div class="container">
         {% if teas %}
         <div class="columns is-multiline">
-            {% for tea in teas.dicts() %}
+            {% for tea in (teas.dicts() if teas.dicts else (teas.get_object_list() if teas.get_object_list else teas)) %}
 
                 <div class="column is-half">
                     <div class="card tea-list-item">
-                        <a href="{{ url_for('tea', tea_vendor=tea.vendor_slug, tea_slug=tea.slug) }}">
+                        <a href="{{ url_for('tea', tea_vendor=(tea.vendor_slug if tea.vendor_slug else (tea.vendor.slug if tea.vendor else '')), tea_slug=tea.slug) }}">
                             <div class="card-image media-left media is-pulled-left">
                                 <figure class="image">
                                     <img src="{{ files.external(tea.illustration) }}" alt="{{ tea.name }}" />

@@ -2,7 +2,7 @@ import math
 
 from flask import request, render_template, redirect, url_for, abort
 from peewee import SQL, fn
-from playhouse.flask_utils import get_object_or_404
+from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 
 from .model import Tea, TeaVendor, TeaType, TypeOfATea
 from .teaparty import app
@@ -24,7 +24,6 @@ def tea(tea_vendor, tea_slug):
                  .where(TypeOfATea.tea == tea)
                  .execute())
 
-    print(tea_types)
     return render_template('tea.html', tea=tea, tea_types=tea_types)
 
 
@@ -47,11 +46,11 @@ def search_for_tea(search_query, paginate_by=0, page=1):
     where_clause = SQL('1')
     for word in search_terms:
         relevance += (fn.IF(Tea.name.contains(word), app.config['SEARCH_WEIGHTS']['name'], 0) +
-                fn.IF(Tea.description.contains(word), app.config['SEARCH_WEIGHTS']['desc'], 0) +
-                fn.IF(Tea.long_description.contains(word), app.config['SEARCH_WEIGHTS']['ldesc'], 0))
+                      fn.IF(Tea.description.contains(word), app.config['SEARCH_WEIGHTS']['desc'], 0) +
+                      fn.IF(Tea.long_description.contains(word), app.config['SEARCH_WEIGHTS']['ldesc'], 0))
         where_clause &= (Tea.name.contains(word) |
-                Tea.description.contains(word) |
-                Tea.long_description.contains(word))
+                         Tea.description.contains(word) |
+                         Tea.long_description.contains(word))
 
     teas = (Tea
             .select(
@@ -89,7 +88,7 @@ def search():
     search_query = request.args.get('q')
     page = request.args.get('page')
 
-    page = min(1, int(page) if page and page.isdigit() else 1)
+    page = max(1, int(page) if page and page.isdigit() else 1)
 
     teas, count, pages_count = search_for_tea(search_query, paginate_by=app.config['ITEMS_PER_PAGE'], page=page)
 
@@ -100,6 +99,28 @@ def search():
     return render_template('search.html', search_query=search_query, teas=teas, pagination={
         'page': page,
         'pages': pages_count
+    })
+
+
+@app.route('/type/<tea_type_slug>')
+def by_type(tea_type_slug):
+    tea_type = get_object_or_404(TeaType, TeaType.slug == tea_type_slug)
+    types = TeaType.select().where(TeaType.is_origin == tea_type.is_origin)
+    teas = PaginatedQuery(
+            (Tea.select(Tea, TeaVendor)
+                .join(TypeOfATea)
+                .join(TeaType)
+                .where(TypeOfATea.tea_type == tea_type)
+                .switch(Tea)
+                .join(TeaVendor)),
+            paginate_by=app.config['ITEMS_PER_PAGE'],
+            page_var='page',
+            check_bounds=True
+    )
+
+    return render_template('tea_types.html', teas=teas, types=types, tea_type=tea_type, pagination={
+        'page': teas.get_page(),
+        'pages': teas.get_page_count()
     })
 
 

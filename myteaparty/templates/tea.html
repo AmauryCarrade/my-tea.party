@@ -112,7 +112,7 @@
                 <div class="column tea-about">
                     <aside class="tea-types is-hidden-mobile">
                         {% for type in tea_types %}
-                            <a href="{{ type.slug }}"><span class="tag">{{ type.name }}</span></a>
+                            <a href="{{ url_for('by_type', tea_type_slug=type.slug) }}"><span class="tag">{{ type.name }}</span></a>
                         {% endfor %}
                     </aside>
 

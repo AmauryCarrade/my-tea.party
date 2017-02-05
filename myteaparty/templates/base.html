@@ -35,8 +35,8 @@
                 <div class="container">
                     <div class="nav-left is-hidden-mobile">
                         {% block menu_left %}
-                        <a href="list.html" class="nav-item">Tous les thés</a>
-                        <a href="list.html" class="nav-item">Origines</a>
+                        <a href="{{ url_for('by_type', tea_type_slug='noir') }}" class="nav-item">Tous les thés</a>
+                        <a href="{{ url_for('by_type', tea_type_slug='darjeeling') }}" class="nav-item">Origines</a>
                         {% endblock %}
                     </div>
                     <div class="nav-center is-hidden-mobile">
