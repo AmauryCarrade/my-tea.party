@@ -1,8 +1,8 @@
 
 ### Custom ###
 
-# Development config file
-/config_dev.py
+# Config files
+/config_*.py
 
 # Downloaded files
 */static/r
