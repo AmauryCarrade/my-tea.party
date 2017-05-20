@@ -1,10 +1,8 @@
 # Database connection
 
-DATABASE_HOST = 'localhost'
-DATABASE_PORT = 3306
-DATABASE_USER = 'root'
-DATABASE_PASS = ''
-DATABASE_BASE = 'teaparty'
+# See http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url
+# Warning: search will not work with SQLite as it uses SQL functions not implemented in this driver.
+DATABASE = 'mysql://user:passwd@ip:port/my_db'
 
 
 # Search options

@@ -1,13 +1,12 @@
-from peewee import MySQLDatabase, Model, CharField, TextField, IntegerField, FloatField, DateTimeField, \
+import datetime
+
+from peewee import Model, CharField, TextField, IntegerField, FloatField, DateTimeField, \
                    BooleanField, ForeignKeyField, CompositeKey
+from playhouse.db_url import connect
 from .teaparty import app
 
-database = MySQLDatabase(app.config['DATABASE_BASE'], **{
-    'host': app.config['DATABASE_HOST'],
-    'port': app.config['DATABASE_PORT'],
-    'user': app.config['DATABASE_USER'],
-    'password': app.config['DATABASE_PASS']
-})
+
+database = connect(app.config['DATABASE'] or 'sqlite:///db.sqlite')
 
 
 class UnknownField(object):
@@ -37,7 +36,7 @@ class TeaType(BaseModel):
     name = CharField(unique=True)
     slug = CharField(unique=True)
     is_origin = BooleanField()
-    order = IntegerField()
+    order = IntegerField(null=True)
 
     class Meta:
         db_table = 'tea_types'
@@ -53,18 +52,21 @@ class Tea(BaseModel):
     name = CharField()
     price = FloatField(null=True)
     price_unit = CharField(null=True)
-    slug = CharField(unique=True)
+    slug = CharField()
     tips_raw = CharField(null=True)
     tips_duration = IntegerField(null=True)
     tips_mass = IntegerField(null=True)
     tips_temperature = IntegerField(null=True)
     tips_volume = IntegerField(null=True)
-    updated = DateTimeField()
+    updated = DateTimeField(default=datetime.datetime.now)
     vendor = ForeignKeyField(db_column='vendor', rel_model=TeaVendor, to_field='id')
     vendor_internal_id = CharField(null=True, db_column='vendor_id')
 
     class Meta:
         db_table = 'tea_teas'
+        indexes = (
+            (('slug', 'vendor'), True),  # Trailing comma (tuple)
+        )
 
 
 class TypeOfATea(BaseModel):
@@ -92,3 +94,11 @@ class TeaListItem(BaseModel):
 
     class Meta:
         db_table = 'tea_lists_items'
+
+
+def init_db():
+    """
+    Utility to initialize an empty database, meant to be used from
+    Flask shell.
+    """
+    database.create_tables([TeaVendor, TeaType, Tea, TypeOfATea, TeaList, TeaListItem])

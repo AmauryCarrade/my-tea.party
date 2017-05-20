@@ -7,6 +7,9 @@
 # Downloaded files
 */static/r
 
+# Development database
+*.sqlite
+
 
 # Created by https://www.gitignore.io/api/linux,macos,python,virtualenv,windows
 
