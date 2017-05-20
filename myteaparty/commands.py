@@ -8,7 +8,7 @@ import re
 import titlecase
 
 from bs4 import BeautifulSoup, UnicodeDammit
-from itertools import groupby
+from itertools import cycle, islice, groupby
 from slugify import slugify
 
 from .teaparty import app
@@ -135,6 +135,22 @@ def get_crawling_session():
     return s
 
 
+def roundrobin(*iterables):
+    """
+    roundrobin('ABC', 'D', 'EF') --> A D E B F C
+    """
+    # Recipe credited to George Sakkis
+    pending = len(iterables)
+    nexts = cycle(iter(it).__next__ for it in iterables)
+    while pending:
+        try:
+            for next in nexts:
+                yield next()
+        except StopIteration:
+            pending -= 1
+            nexts = cycle(islice(nexts, pending))
+
+
 @app.cli.command('import')
 @click.option('--dry-run', is_flag=True, default=False, help='If specified, the database will not be altered.')
 @click.argument('importer', nargs=-1)
@@ -148,18 +164,16 @@ def import_command(dry_run, importer):
     importers = importer
 
     if 'all' in importers:
-        click.echo('Using all importers on request: ' + ', '.join(importers_names) + '.')
+        click.echo('Using all importers on request: {}.'.format(', '.join(importers_names)))
         importers_active.extend(importers_names)
     else:
-        for importer in importers:
-            if importer in importers_names:
-                importers_active.append(importer)
-            else:
-                click.echo('Skipping importer ' + importer + ', not found.')
+        importers_active.extend([importer for importer in importers if importer in importers_names])
+        click.echo('Skipping the following importers (not found): {}'
+                .format(', '.join([importer for importer in importers if importer not in importers_names])))
 
     if not importers_active:
         if not importers:
-            click.echo('No imported specified. Valid importers: ' + ', '.join(importers_names) + '.')
+            click.echo('No imported specified. Valid importers: {}.'.format(', '.join(importers_names)))
         else:
             click.echo('No valid importer selected. Exiting.')
         click.echo('Use --help for help.')
@@ -168,8 +182,8 @@ def import_command(dry_run, importer):
     importers_instances = [importlib.import_module('.' + importer, package=vendors.__name__)
                                     .Importer(get_crawling_session()) for importer in importers_active]
 
-    click.echo(click.style('\nStarting import from ' +
-                           ', '.join([imp.get_vendor().name for imp in importers_instances]), bold=True))
+    click.echo(click.style('\nStarting import from {}...'.format(
+                                ', '.join([imp.get_vendor().name for imp in importers_instances])), bold=True))
     if dry_run:
         click.echo('Performing a dry run.')
 
@@ -186,14 +200,13 @@ def import_command(dry_run, importer):
     for imp in importers_instances:
         steps = imp.prepare_references()
         if steps is None:
-            click.echo('References pre-collection failed for ' + imp.__class__.__name__)
+            click.echo('References pre-collection failed for {}'.format(imp.__class__.__name__))
         else:
             references_steps += steps
 
     with click.progressbar(length=references_steps + 1, label='Retrieving references'.ljust(32)) as bar:
-        for imp in importers_instances:
-            for _ in imp.retrieve_references():
-                bar.update(1)
+        for _ in roundrobin(*[imp.retrieve_references() for imp in importers_instances]):
+            bar.update(1)
 
         references_count = 0
         references_errors = []
@@ -225,55 +238,54 @@ def import_command(dry_run, importer):
     teas_to_insert = []
 
     with click.progressbar(length=references_count, label='Retrieving tea informations'.ljust(32)) as bar:
-        for imp in importers_instances:
-            for data, types in imp.crawl_teas():
-                data['name'] = titlecase.titlecase(data['name'].title())
-                updated = (Tea.update(**data)
+        for data, types in roundrobin(*[imp.crawl_teas() for imp in importers_instances]):
+            data['name'] = titlecase.titlecase(data['name'].title())
+            updated = (Tea.update(**data)
+                          .where((Tea.vendor_internal_id == data['vendor_internal_id']) &
+                                 (Tea.vendor == imp.get_vendor()))
+                          .execute())
+
+            has_to_add_tags = True
+            if updated == 0:
+                # We first check if this is really a new tea, or if the data
+                # was not changed at all.
+                new_tea = (Tea.select()
                               .where((Tea.vendor_internal_id == data['vendor_internal_id']) &
                                      (Tea.vendor == imp.get_vendor()))
-                              .execute())
+                              .count() == 0)
+                if new_tea:
+                    # In case of an insertion, we add the slug and then check
+                    # if the slug is unique
+                    if imp.get_vendor().name not in used_slugs:
+                        used_slugs[imp.get_vendor().name] = []
 
-                has_to_add_tags = True
-                if updated == 0:
-                    # We first check if this is really a new tea, or if the data
-                    # was not changed at all.
-                    new_tea = (Tea.select()
-                                  .where((Tea.vendor_internal_id == data['vendor_internal_id']) &
-                                         (Tea.vendor == imp.get_vendor()))
-                                  .count() == 0)
-                    if new_tea:
-                        # In case of an insertion, we add the slug and then check
-                        # if the slug is unique
-                        if imp.get_vendor().name not in used_slugs:
-                            used_slugs[imp.get_vendor().name] = []
+                    data['slug'] = slugify(data['name'])
+                    if data['slug'] in used_slugs[imp.get_vendor().name]:
+                        suffix = 1
+                        while True:
+                            slug = data['slug'] + '-' + str(suffix)
+                            if slug in used_slugs[imp.get_vendor().name]:
+                                suffix += 1
+                            else:
+                                data['slug'] = slug
+                                break
+                    used_slugs[imp.get_vendor().name].append(data['slug'])
 
-                        data['slug'] = slugify(data['name'])
-                        if data['slug'] in used_slugs[imp.get_vendor().name]:
-                            suffix = 1
-                            while True:
-                                slug = data['slug'] + '-' + str(suffix)
-                                if slug in used_slugs[imp.get_vendor().name]:
-                                    suffix += 1
-                                else:
-                                    data['slug'] = slug
-                                    break
-                        used_slugs[imp.get_vendor().name].append(data['slug'])
+                    teas_to_insert.append(data)
+                    if imp.get_vendor().name not in types_to_insert:
+                        types_to_insert[imp.get_vendor().name] = {}
+                    types_to_insert[imp.get_vendor().name][data['vendor_internal_id']] = types
 
-                        teas_to_insert.append(data)
-                        if imp.get_vendor().name not in types_to_insert:
-                            types_to_insert[imp.get_vendor().name] = {}
-                        types_to_insert[imp.get_vendor().name][data['vendor_internal_id']] = types
+                    has_to_add_tags = False
 
-                        has_to_add_tags = False
+            if has_to_add_tags:
+                this_tea = Tea.select(Tea.id).where((Tea.vendor_internal_id == data['vendor_internal_id']) &
+                                                    (Tea.vendor == imp.get_vendor()))
+                TypeOfATea.delete().where(TypeOfATea.tea == this_tea).execute()
+                if types:
+                    TypeOfATea.insert_many([{'tea': this_tea, 'tea_type': tea_type} for tea_type in types]).execute()
 
-                if has_to_add_tags:
-                    this_tea = Tea.select(Tea.id).where((Tea.vendor_internal_id == data['vendor_internal_id']) &
-                                                        (Tea.vendor == imp.get_vendor()))
-                    TypeOfATea.delete().where(TypeOfATea.tea == this_tea).execute()
-                    if types:
-                        TypeOfATea.insert_many([{'tea': this_tea, 'tea_type': tea_type} for tea_type in types]).execute()
-
-                bar.update(1)
+            bar.update(1)
 
     failed = []
     for imp in importers_instances:
