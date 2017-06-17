@@ -16,8 +16,8 @@ class MariageFreresImporter(TeaVendorImporter):
     BASE_FR = BASE_URL + '/FR'
     HOMEPAGE = BASE_FR + '/accueil.html'
 
-    def __init__(self, session):
-        super().__init__(session)
+    def __init__(self, session, retries=3):
+        super().__init__(session, retries)
 
         self.links = []
         self.teas_links = []
@@ -69,8 +69,8 @@ class MariageFreresImporter(TeaVendorImporter):
         # We first try to retrieve tea pages references from the details pages
         # listed in the bottom of any page
 
-        r = self.session.get(self.HOMEPAGE)
-        if not r.ok:
+        r = self._get(self.HOMEPAGE)
+        if not r:
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -95,12 +95,12 @@ class MariageFreresImporter(TeaVendorImporter):
 
     def retrieve_references(self):
         """
-        Retrieves the references. Yelds each time a step (defined in the previous
+        Retrieves the references. Yields each time a step (defined in the previous
         method) is achieved (e.g. one page analyzed).
         """
         for link in self.links:
-            r = self.session.get(link)
-            if not r.ok:
+            r = self._get(link)
+            if not r:
                 self.failed.append(link)
                 yield
                 continue
@@ -163,21 +163,9 @@ class MariageFreresImporter(TeaVendorImporter):
 
         return len(self.teas_ids), self.failed
 
-    def get_retrieved_internal_ids(self):
-        """
-        Returns the retrieved teas internal IDs from the vendor (the
-        one returned as vendor_internal_id in crawl_teas).
-        This is used to ckeck for deleted teas and mark them as such.
-
-        This method is called after analyze_references.
-
-        :return: a list containing the retrieved teas internal IDs.
-        """
-        return self.teas_ids
-
     def crawl_teas(self):
         """
-        Crawl the teas themselves. Yelds for each tea retrieved a tuple with a dict
+        Crawl the teas themselves. Yields for each tea retrieved a tuple with a dict
         containing the keys in the Tea model, and a list with the tags of this tea
         (instances of the TypeOfATea, see self.get_tea_types()).
         """
@@ -188,11 +176,10 @@ class MariageFreresImporter(TeaVendorImporter):
 
         for tea_link in self.teas_links:
             tea_id, tea_id_numeric = self._extract_tea_id_from_link(tea_link)
-            try:
-                r = self.session.get(tea_link)
-                r.raise_for_status()
-            except Exception:
+            r = self._get(tea_link)
+            if not r:
                 self.failed.append(tea_link)
+                yield None, []
                 continue
 
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -209,10 +196,8 @@ class MariageFreresImporter(TeaVendorImporter):
 
             long_description_element = soup.find(id='fiche_desc')
             if long_description_element:
-                long_description = (UnicodeDammit(
-                    long_description_element.encode_contents())
-                    .unicode_markup.strip().replace('</br>', '')
-                    .strip('<br/>').strip())
+                long_description = (UnicodeDammit(long_description_element.encode_contents())
+                    .unicode_markup.strip().replace('</br>', '').strip('<br/>').strip())
 
             # Retrives tips
 
@@ -289,14 +274,8 @@ class MariageFreresImporter(TeaVendorImporter):
 
             # Retrives tea types
 
-            tea_tags = [tag.get_text().strip('#').strip().lower() for tag in soup.select('#A11 a.fiche_ref_lien')]
-            lower_description = description.lower()
-            types = []
-            for tea_type, keywords in tea_types:
-                keywords_lower = [w.lower() for w in keywords]
-                if tea_type not in types and (any(keyword in tea_tags for keyword in keywords_lower) or
-                                              any(keyword in lower_description for keyword in keywords_lower)):
-                    types.append(tea_type)
+            tea_tags = [tag.get_text().strip('#').strip() for tag in soup.select('#A11 a.fiche_ref_lien')]
+            types = self._retrieve_teas_types(*tea_tags, description, long_description)
 
             # Returns the thing
 
@@ -327,5 +306,17 @@ class MariageFreresImporter(TeaVendorImporter):
         :return: List of errors.
         """
         return self.failed
+
+    def get_retrieved_internal_ids(self):
+        """
+        Returns the retrieved teas internal IDs from the vendor (the
+        one returned as vendor_internal_id in crawl_teas).
+        This is used to ckeck for deleted teas and mark them as such.
+
+        This method is called after analyze_references.
+
+        :return: a list containing the retrieved teas internal IDs.
+        """
+        return self.teas_ids
 
 Importer = MariageFreresImporter

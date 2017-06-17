@@ -19,8 +19,11 @@ import myteaparty.tea_vendors as vendors
 
 
 class TeaVendorImporter(object):
-    def __init__(self, session):
+    def __init__(self, session, retries=3):
         self.session = session
+        self.retries = retries
+
+        self._cached_tea_types = None
 
     def get_tea_types(self):
         """
@@ -32,26 +35,68 @@ class TeaVendorImporter(object):
             return TeaType.get_or_create(*args, **kwargs)[0]
 
         return [
-            (get_or_create(name='Thé noir', slug='noir', is_origin=False), ['Thé noir']),
-            (get_or_create(name='Thé vert', slug='vert', is_origin=False), ['Thé vert']),
+            (get_or_create(name='Thé noir', slug='noir', is_origin=False), ['Thé noir', 'Black Tea']),
+            (get_or_create(name='Thé vert', slug='vert', is_origin=False), ['Thé vert', 'Green Tea']),
             (get_or_create(name='Thé blanc', slug='blanc', is_origin=False), ['Thé blanc']),
-            (get_or_create(name='Thé mûr', slug='mur', is_origin=False), ['Thé mûr', 'Thé mur', 'Pu-erh', 'Puerh']),
+            (get_or_create(name='Thé mûr', slug='mur', is_origin=False), ['Thé mûr', 'Thé mur',
+                                                                          'Pu-erh', 'Puerh', 'Pu Erh']),
+            (get_or_create(name='Thé Oolong', slug='oolong', is_origin=False), ['Oolong']),
             (get_or_create(name='Thé jaune', slug='jaune', is_origin=False), ['Thé jaune']),
             (get_or_create(name='Thé bleu', slug='bleu', is_origin=False), ['Thé bleu']),
             (get_or_create(name='Thé rouge', slug='rouge', is_origin=False), ['Thé rouge', 'Thé rouge sans théine',
-                                                                              'sans théine']),
+                                                                              'sans théine', 'Rooibos']),
             (get_or_create(name='Thé fûmé', slug='fume', is_origin=False), ['Thé fûmé', 'Thé fumé']),
-            (get_or_create(name='Thé au Jasmin', slug='jasmin', is_origin=False), ['Thé au jasmin', 'Jasmin']),
+            (get_or_create(name='Thé au Jasmin', slug='jasmin', is_origin=False), ['Thé au jasmin', 'Jasmin', 'Jasmine']),
             (get_or_create(name='Infusion', slug='infusion', is_origin=False), ['Infusion', 'Infusion de fruits']),
 
             (get_or_create(name='Grand cru', slug='grand-cru', is_origin=False), ['Grand cru']),
-            (get_or_create(name='Darjeeling', slug='darjeeling', is_origin=True), ['Darjeeling', 'Darjeeling de Printemps',
-                                                                                   'Darjeeling d\'Été']),
+            (get_or_create(name='Darjeeling', slug='darjeeling', is_origin=True), ['Darjeeling']),
             (get_or_create(name='Assam', slug='assam', is_origin=True), ['Assam', 'Assam d\'Été']),
             (get_or_create(name='Ceylan', slug='ceylan', is_origin=True), ['Ceylan']),
-            (get_or_create(name='Thé de Chine', slug='chine', is_origin=True), ['Thé de Chine', 'Chine']),
+            (get_or_create(name='Thé de Chine', slug='chine', is_origin=True), ['Chine']),
             (get_or_create(name='Thé du Japon', slug='japon', is_origin=True), ['Japon'])
         ]
+
+    def _get(self, url, **kwargs):
+        """
+        Loads an URL using the class' session. Retries a few times (according
+        to self.retries) and then gives up, printing an error message and
+        returning None.
+
+        :param url: The URL to load (using a GET request).
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: The requests.Response object, or None if the request failed
+                 too many times.
+        """
+        last_exception = None
+        for _ in range(self.retries):
+            try:
+                r = self.session.get(url, **kwargs)
+                r.raise_for_status()
+                return r
+            except requests.RequestException as e:
+                last_exception = e
+        click.echo('Unable to get « {} », giving up after {} retries.\n{}'
+                        .format(url, self.retries, last_exception), err=True)
+        return None
+
+    def _retrieve_teas_types(self, *haystacks):
+        """
+        Lookups in all string haystacks given for keywords retrieved from
+        self.get_tea_types(), and returns a list of types found.
+        """
+        if not self._cached_tea_types:
+            self._cached_tea_types = self.get_tea_types()
+
+        types = []
+        haystacks = [haystack.lower() for haystack in haystacks]
+        for tea_type, keywords in self._cached_tea_types:
+            keywords_lower = [w.lower() for w in keywords]
+            if tea_type not in types and any(keyword in haystack for keyword in keywords_lower
+                                                                 for haystack in haystacks):
+                types.append(tea_type)
+
+        return types
 
     def get_vendor(self):
         """
@@ -76,9 +121,10 @@ class TeaVendorImporter(object):
 
     def retrieve_references(self):
         """
-        Retrieves the references. Yelds each time a step (defined in the previous
+        Retrieves the references. Yields each time a step (defined in the previous
         method) is achieved (e.g. one page analyzed).
         """
+        pass
 
     def analyze_references(self):
         """
@@ -89,19 +135,9 @@ class TeaVendorImporter(object):
         """
         pass
 
-    def get_retrieved_internal_ids(self):
-        """
-        Returns the retrieved teas internal IDs from the vendor (the
-        one returned as vendor_internal_id in crawl_teas).
-        This is used to ckeck for deleted teas and mark them as such.
-
-        :return: a list containing the retrieved teas internal IDs.
-        """
-        pass
-
     def crawl_teas(self):
         """
-        Crawl the teas themselves. Yelds for each tea retrieved a tuple with a dict
+        Crawl the teas themselves. Yields for each tea retrieved a tuple with a dict
         containing the keys in the Tea model, and a list with the tags of this tea
         (instances of the TypeOfATea, see self.get_tea_types()).
         """
@@ -113,6 +149,18 @@ class TeaVendorImporter(object):
         of network error or 404).
 
         :return: List of errors.
+        """
+        pass
+
+    def get_retrieved_internal_ids(self):
+        """
+        Returns the retrieved teas internal IDs from the vendor (the
+        one returned as vendor_internal_id in crawl_teas).
+        This is used to ckeck for deleted teas and mark them as such.
+
+        This is called after crawl_teas.
+
+        :return: a list containing the retrieved teas internal IDs.
         """
         pass
 
@@ -168,15 +216,16 @@ def import_command(dry_run, importer):
         importers_active.extend(importers_names)
     else:
         importers_active.extend([importer for importer in importers if importer in importers_names])
-        click.echo('Skipping the following importers (not found): {}'
-                .format(', '.join([importer for importer in importers if importer not in importers_names])))
+        skipped = [importer for importer in importers if importer not in importers_names]
+        if skipped:
+            click.echo('Skipping the following importers (not found): {}'.format(', '.join(skipped)), err=True)
 
     if not importers_active:
         if not importers:
-            click.echo('No imported specified. Valid importers: {}.'.format(', '.join(importers_names)))
+            click.echo('No imported specified. Valid importers: {}.'.format(', '.join(importers_names)), err=True)
         else:
-            click.echo('No valid importer selected. Exiting.')
-        click.echo('Use --help for help.')
+            click.echo('No valid importer selected. Exiting.', err=True)
+        click.echo('Use --help for help.', err=True)
         return
 
     importers_instances = [importlib.import_module('.' + importer, package=vendors.__name__)
@@ -226,20 +275,18 @@ def import_command(dry_run, importer):
 
     click.echo()
 
-    click.echo('Flagging entries in database but not retrieved as deleted...', nl=False)
-    for imp in importers_instances:
-        (Tea.update(deleted=datetime.datetime.now())
-            .where((Tea.vendor_internal_id.not_in(imp.get_retrieved_internal_ids())) &
-                   (Tea.vendor == imp.get_vendor())).execute())
-    click.echo(' Done.')
-    click.echo()
-
     types_to_insert = {}
     teas_to_insert = []
 
     with click.progressbar(length=references_count, label='Retrieving tea informations'.ljust(32)) as bar:
         for data, types in roundrobin(*[imp.crawl_teas() for imp in importers_instances]):
+            if data is None:
+                bar.update(1)
+                continue
+
             data['name'] = titlecase.titlecase(data['name'].title())
+            data['deleted'] = False  # If a previously-deleted tea is retrieved, it is no longer deleted,
+                                     # and unmarked as such in our database.
             updated = (Tea.update(**data)
                           .where((Tea.vendor_internal_id == data['vendor_internal_id']) &
                                  (Tea.vendor == imp.get_vendor()))
@@ -318,6 +365,14 @@ def import_command(dry_run, importer):
 
         click.echo(' Done.')
         click.echo()
+
+    click.echo('Flagging entries in database but not retrieved as deleted...', nl=False)
+    for imp in importers_instances:
+        (Tea.update(deleted=datetime.datetime.now())
+            .where((Tea.vendor_internal_id.not_in(imp.get_retrieved_internal_ids())) &
+                   (Tea.vendor == imp.get_vendor())).execute())
+    click.echo(' Done.')
+    click.echo()
 
     if dry_run:
         click.echo('It was a dry run, rollbacking changes...', nl=False)
