@@ -14,6 +14,7 @@ from slugify import slugify
 from .teaparty import app
 from .utils import save_distant_file
 from .model import Tea, TeaType, TypeOfATea, TeaVendor, database
+from .model import get_or_create as get_or_create_model
 
 import myteaparty.tea_vendors as vendors
 
@@ -32,7 +33,7 @@ class TeaVendorImporter(object):
         to ckeck if the tea is this type.
         """
         def get_or_create(*args, **kwargs):
-            return TeaType.get_or_create(*args, **kwargs)[0]
+            return get_or_create_model(TeaType, *args, **kwargs)[0]
 
         return [
             (get_or_create(name='Thé noir', slug='noir', is_origin=False), ['Thé noir', 'Black Tea']),
@@ -212,17 +213,17 @@ def import_command(dry_run, importer):
     importers = importer
 
     if 'all' in importers:
-        click.echo('Using all importers on request: {}.'.format(', '.join(importers_names)))
+        click.echo(f'Using all importers on request: {", ".join(importers_names)}.')
         importers_active.extend(importers_names)
     else:
         importers_active.extend([importer for importer in importers if importer in importers_names])
         skipped = [importer for importer in importers if importer not in importers_names]
         if skipped:
-            click.echo('Skipping the following importers (not found): {}'.format(', '.join(skipped)), err=True)
+            click.echo(f'Skipping the following importers (not found): {", ".join(skipped)}', err=True)
 
     if not importers_active:
         if not importers:
-            click.echo('No imported specified. Valid importers: {}.'.format(', '.join(importers_names)), err=True)
+            click.echo(f'No imported specified. Valid importers: {", ".join(importers_names)}.'.format(', '.join(importers_names)), err=True)
         else:
             click.echo('No valid importer selected. Exiting.', err=True)
         click.echo('Use --help for help.', err=True)
@@ -249,7 +250,7 @@ def import_command(dry_run, importer):
     for imp in importers_instances:
         steps = imp.prepare_references()
         if steps is None:
-            click.echo('References pre-collection failed for {}'.format(imp.__class__.__name__))
+            click.echo(f'\nReferences pre-collection failed for {imp.__class__.__name__}', err=True)
         else:
             references_steps += steps
 
@@ -267,11 +268,11 @@ def import_command(dry_run, importer):
 
         bar.update(1)
 
-    click.echo('{} references found. {} fails.'.format(references_count, len(references_errors)))
+    click.echo(f'{references_count} references found. {len(references_errors)} fails.')
     if references_errors:
-        click.echo('The following errored:')
+        click.echo('The following errored:', err=True)
         for error in references_errors:
-            click.echo('→ {}'.format(error))
+            click.echo(f'→ {error}', err=True)
 
     click.echo()
 
@@ -285,8 +286,8 @@ def import_command(dry_run, importer):
                 continue
 
             data['name'] = titlecase.titlecase(data['name'].title())
-            data['deleted'] = False  # If a previously-deleted tea is retrieved, it is no longer deleted,
-                                     # and unmarked as such in our database.
+            data['deleted'] = None  # If a previously-deleted tea is retrieved, it is no longer deleted,
+                                    # and unmarked as such in our database.
             updated = (Tea.update(**data)
                           .where((Tea.vendor_internal_id == data['vendor_internal_id']) &
                                  (Tea.vendor == imp.get_vendor()))
@@ -338,11 +339,11 @@ def import_command(dry_run, importer):
     for imp in importers_instances:
         failed.extend(imp.get_crawl_errors() or [])
 
-    click.echo('{} fails.'.format(len(failed)))
+    click.echo(f'{len(failed)} fails.')
     if failed:
-        click.echo('The following errored:')
+        click.echo('The following errored:', err=True)
         for fail in failed:
-            click.echo('→ {}'.format(fail))
+            click.echo(f'→ {fail}', err=True)
 
     click.echo()
 

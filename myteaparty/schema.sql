@@ -1,7 +1,7 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT=0;
 START TRANSACTION;
-SET time_zone = "+00:00";
+SET time_zone = "+02:00";
 
 --
 -- Database: `teaparty`
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `tea_lists` (
   `creator_ip` binary(128) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `tea_lists_items` (
   `is_empty` tinyint(1) NOT NULL DEFAULT '0',
   KEY `list_id` (`list_id`),
   KEY `tea_id` (`tea_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- RELATIONS FOR TABLE `tea_lists_items`:
@@ -59,10 +59,12 @@ CREATE TABLE IF NOT EXISTS `tea_teas` (
   `long_description` text CHARACTER SET utf8 COMMENT 'A long description for the tea, can be extanded over multiple paragraphs',
   `ingredients` text CHARACTER SET utf8 COMMENT 'Coma-separated list of ingredients, if supplied',
   `tips_raw` text CHARACTER SET utf8 COMMENT 'The raw preparation tips, displayed if the analysis fails',
-  `tips_mass` mediumint(7) DEFAULT NULL COMMENT 'The advised mass in mg',
+  `tips_mass` mediumint(7) DEFAULT NULL COMMENT 'The advised mass in mg. If negative, the absolute value is the amount of tea pockets.',
   `tips_volume` smallint(6) DEFAULT NULL COMMENT 'The advised volume in cL',
   `tips_temperature` smallint(6) DEFAULT NULL COMMENT 'The advised temperature in °C',
   `tips_duration` smallint(6) DEFAULT NULL COMMENT 'The advised duration in seconds',
+  `tips_extra` text CHARACTER SET utf8 DEFAULT NULL COMMENT 'Extra comments to be printed after the tips, if any',
+  `tips_max_brews` smallint(6) DEFAULT 1 COMMENT 'The times this tea can be brewed using the same leafs',
   `illustration` varchar(70) CHARACTER SET utf8 DEFAULT NULL COMMENT 'A reference to the tea illustration',
   `price` float DEFAULT NULL COMMENT 'The price as seen in the vendor page (euros)',
   `price_unit` varchar(100) CHARACTER SET utf8 DEFAULT NULL COMMENT 'The amount of tea sold for the stored price (e.g. “100 g.”)',
@@ -72,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `tea_teas` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`),
   KEY `vendor` (`vendor`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 --
 -- RELATIONS FOR TABLE `tea_teas`:
@@ -134,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `tea_vendors` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`,`link`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 --
 -- Constraints for tables

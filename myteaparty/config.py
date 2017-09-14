@@ -2,7 +2,8 @@
 
 # See http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url
 # Warning: search will not work with SQLite as it uses SQL functions not implemented in this driver.
-DATABASE = 'mysql://user:passwd@ip:port/my_db'
+# DATABASE = 'mysql://user:passwd@ip:port/my_db'
+DATABASE = ''
 
 
 # Search options
