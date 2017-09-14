@@ -5,7 +5,7 @@
     <div class="container">
         <div class="columns is-vcentered">
             <div class="column tea-title">
-                <h1 class="title">{{ tea_type.name }}</h1>
+                <h1 class="title">{{ tea_type.name if not all else 'Tous les thés' }}</h1>
             </div>
             <div class="column is-narrow is-5 is-hidden-mobile main-search-input-column">
                 <form class="main-tea-search" action="{{ url_for('search') }}">
@@ -28,8 +28,14 @@
     <nav class="tabs is-boxed is-fullwidth">
         <div class="container">
             <ul>
+                <li {% if all %}class="is-active"{% endif %}>
+                    <a href="{{ url_for('all_teas') }}">Tous les thés</a>
+                </li>
+
                 {% for type in types %}
-                    <li {% if type == tea_type %}class="is-active"{% endif %}><a href="{{ url_for('by_type', tea_type_slug=type.slug) }}">{{ type.name }}</a></li>
+                    <li {% if type == tea_type and not all %}class="is-active"{% endif %}>
+                        <a href="{{ url_for('by_type', tea_type_slug=type.slug) }}">{{ type.name }}</a>
+                    </li>
                 {% endfor %}
             </ul>
         </div>

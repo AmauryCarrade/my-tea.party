@@ -81,7 +81,6 @@ def search_for_tea(search_query, paginate_by=0, page=1):
 
     return teas if paginate_by <= 0 else (teas, count, pages_count)
 
-
 @app.route('/search')
 def search():
     search_query = request.args.get('q')
@@ -117,7 +116,24 @@ def by_type(tea_type_slug):
             check_bounds=True
     )
 
-    return render_template('tea_types.html', teas=teas, types=types, tea_type=tea_type, pagination={
+    return render_template('tea_types.html', teas=teas, types=types, tea_type=tea_type, all=False, pagination={
+        'page': teas.get_page(),
+        'pages': teas.get_page_count()
+    })
+
+@app.route('/teas')
+def all_teas():
+    types = TeaType.select().where(TeaType.is_origin == False)
+    teas = PaginatedQuery(
+            (Tea.select(Tea, TeaVendor).join(TeaVendor)),
+            paginate_by=app.config['ITEMS_PER_PAGE'],
+            page_var='page',
+            check_bounds=True
+    )
+
+    print(Tea.select(Tea, TeaVendor).join(TeaVendor).sql())
+
+    return render_template('tea_types.html', teas=teas, types=types, tea_type=None, all=True, pagination={
         'page': teas.get_page(),
         'pages': teas.get_page_count()
     })

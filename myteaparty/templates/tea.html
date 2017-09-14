@@ -79,7 +79,13 @@
                     <dl class="tips">
                         {% if tea.tips_mass %}
                         <dt>Quantité par infusion</dt>
-                        <dd>{{ tea.tips_mass / 1000 }} g {% if tea.tips_volume %}<span class="text-muted">pour</span> {{ tea.tips_volume }} cl{% endif %}</dd>
+                        <dd>
+                            {%- if tea.tips_mass >= 0 -%}
+                                {{ tea.tips_mass / 1000 }} g
+                            {%- else -%}
+                                {{ -tea.tips_mass }} sachet{%- if -tea.tips_mass > 1 -%}s{%- endif -%}
+                            {%- endif %}
+                            {% if tea.tips_volume %}<span class="text-muted">pour</span> {{ tea.tips_volume }} cl{% endif %}</dd>
                         {% endif %}
 
                         {% if tea.tips_temperature %}
