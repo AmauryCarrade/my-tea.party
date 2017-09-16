@@ -24,6 +24,7 @@ class TeaVendor(BaseModel):
     logo = CharField(null=True)
     name = CharField()
     slug = CharField(unique=True)
+    order = IntegerField(default=0)
 
     class Meta:
         db_table = 'tea_vendors'

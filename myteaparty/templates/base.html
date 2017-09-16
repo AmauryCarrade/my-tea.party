@@ -60,6 +60,7 @@
                         {% block menu_left %}
                         <a href="{{ url_for('all_teas') }}" class="nav-item">Tous les thés</a>
                         <a href="{{ url_for('by_type', tea_type_slug='darjeeling') }}" class="nav-item">Origines</a>
+                        <a href="{{ url_for('by_vendor') }}" class="nav-item is-hidden-mobile">Fabriquants</a>
                         {% endblock %}
                     </div>
                     <div class="nav-center is-hidden-mobile">

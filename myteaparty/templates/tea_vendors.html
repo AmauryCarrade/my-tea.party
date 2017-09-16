@@ -1,0 +1,13 @@
+{% extends 'base_list_with_categories.html' %}
+
+{% block list_title %}{{ tea_vendor.name }}{% endblock %}
+
+{% block list_subtitle %}{{ tea_vendor.description }}{% endblock %}
+
+{% block list_categories %}
+    {% for vendor in vendors %}
+        <li {% if vendor == tea_vendor %}class="is-active"{% endif %}>
+            <a href="{{ url_for('by_vendor', vendor_slug=vendor.slug) }}">{{ vendor.name }}</a>
+        </li>
+    {% endfor %}
+{% endblock %}

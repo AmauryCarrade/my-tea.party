@@ -121,6 +121,29 @@ def by_type(tea_type_slug):
         'pages': teas.get_page_count()
     })
 
+@app.route('/vendor', defaults={'vendor_slug': None})
+@app.route('/vendors', defaults={'vendor_slug': None})
+@app.route('/vendor/<vendor_slug>')
+def by_vendor(vendor_slug):
+    if vendor_slug is None:
+        return redirect(url_for('by_vendor', vendor_slug=TeaVendor.select(TeaVendor.slug).order_by(TeaVendor.order).first().slug))
+
+    vendor = get_object_or_404(TeaVendor, TeaVendor.slug == vendor_slug)
+    vendors = TeaVendor.select().order_by(TeaVendor.order)
+    teas = PaginatedQuery(
+            (Tea.select(Tea, TeaVendor)
+                .join(TeaVendor)
+                .where(Tea.vendor == vendor)),
+            paginate_by=app.config['ITEMS_PER_PAGE'],
+            page_var='page',
+            check_bounds=True
+    )
+
+    return render_template('tea_vendors.html', vendors=vendors, teas=teas, tea_vendor=vendor, pagination={
+        'page': teas.get_page(),
+        'pages': teas.get_page_count()
+    })
+
 @app.route('/teas')
 def all_teas():
     types = TeaType.select().where(TeaType.is_origin == False)
