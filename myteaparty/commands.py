@@ -362,7 +362,16 @@ def import_command(dry_run, importer):
 
     if teas_to_insert:
         click.echo(f'Inserting {len(teas_to_insert)} new record{"s" if len(teas_to_insert) > 1 else ""}...', nl=False)
-        Tea.insert_many(teas_to_insert).execute()
+
+        # Because if teas are deleted we does not update the illustration to avoid a loss,
+        # there is two categories of teas: ones with an 'illustration' key and one without.
+        # We separate these two because the bulk insert requires all dicts to have the same
+        # keys.
+        teas_to_insert_with_illustration = [tea for tea in teas_to_insert if 'illustration' in tea]
+        teas_to_insert_without_illustration = [tea for tea in teas_to_insert if 'illustration' not in tea]
+
+        Tea.insert_many(teas_to_insert_with_illustration).execute()
+        Tea.insert_many(teas_to_insert_without_illustration).execute()
 
         # Insertion of types
         types_insert = []
