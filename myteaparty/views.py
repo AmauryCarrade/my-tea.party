@@ -131,8 +131,6 @@ def all_teas():
             check_bounds=True
     )
 
-    print(Tea.select(Tea, TeaVendor).join(TeaVendor).sql())
-
     return render_template('tea_types.html', teas=teas, types=types, tea_type=None, all=True, pagination={
         'page': teas.get_page(),
         'pages': teas.get_page_count()

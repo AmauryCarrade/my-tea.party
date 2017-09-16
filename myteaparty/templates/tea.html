@@ -98,7 +98,12 @@
                         <dd>{{ tea.tips_duration // 60 }} minute{% if tea.tips_duration >= 120 %}s{% endif %}</dd>
                         {% endif %}
 
-                        {% if not (tea.tips_mass and tea.tips_temperature and tea.tips_duration) %}
+                        {% if tea.tips_extra %}
+                        <dt>Et ensuite...</dt>
+                        <dd>{{ tea.tips_extra }}</dd>
+                        {% endif %}
+
+                        {% if not (tea.tips_mass and tea.tips_temperature and tea.tips_duration) and not tea.tips_extra %}
                         <dt>Conseils de préparation</dt>
                         <dd{% if '\r' in tea.tips_raw or '\n' in tea.tips_raw %} class="tips_raw"{% endif %}>
                             {{ tea.tips_raw.replace('\r\n', '<br />').replace('\r', '<br />').replace('\n', '<br />')|safe }}
