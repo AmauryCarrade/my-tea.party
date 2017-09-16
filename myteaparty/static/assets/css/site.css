@@ -43,8 +43,8 @@ html, body {
 
 body > section.hero {
     background-color: #212121 !important;
-    background-image: url('../img/top-banner-tea-1.jpg');
-    background-position: 0 -48px;
+    background-image: url('../img/top-banner-tea-3.jpg');
+    background-position: 66% 12%;
 }
 
 body > section.hero header {
