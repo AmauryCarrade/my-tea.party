@@ -103,7 +103,7 @@ def search():
 @app.route('/type/<tea_type_slug>')
 def by_type(tea_type_slug):
     tea_type = get_object_or_404(TeaType, TeaType.slug == tea_type_slug)
-    types = TeaType.select().where(TeaType.is_origin == tea_type.is_origin)
+    types = TeaType.select().where(TeaType.is_origin == tea_type.is_origin).order_by(TeaType.order)
     teas = PaginatedQuery(
             (Tea.select(Tea, TeaVendor)
                 .join(TypeOfATea)
@@ -146,7 +146,7 @@ def by_vendor(vendor_slug):
 
 @app.route('/teas')
 def all_teas():
-    types = TeaType.select().where(TeaType.is_origin == False)
+    types = TeaType.select().where(TeaType.is_origin == False).order_by(TeaType.order)
     teas = PaginatedQuery(
             (Tea.select(Tea, TeaVendor).join(TeaVendor)),
             paginate_by=app.config['ITEMS_PER_PAGE'],
