@@ -12,9 +12,9 @@ from itertools import cycle, islice, groupby
 from slugify import slugify
 
 from .teaparty import app
-from .utils import save_distant_file
 from .model import Tea, TeaType, TypeOfATea, TeaVendor, database
 from .model import get_or_create as get_or_create_model
+from .utils import save_distant_file
 
 import myteaparty.tea_vendors as vendors
 
@@ -285,12 +285,14 @@ def import_command(dry_run, importer):
                 bar.update(1)
                 continue
 
+            vendor = data['vendor']
+
             data['name'] = titlecase.titlecase(data['name'].title())
             data['deleted'] = None  # If a previously-deleted tea is retrieved, it is no longer deleted,
                                     # and unmarked as such in our database.
             updated = (Tea.update(**data)
-                          .where((Tea.vendor_internal_id == data['vendor_internal_id']) &
-                                 (Tea.vendor == imp.get_vendor()))
+                          .where((Tea.vendor_internal_id == str(data['vendor_internal_id'])) &
+                                 (Tea.vendor == vendor))
                           .execute())
 
             has_to_add_tags = True
@@ -298,37 +300,37 @@ def import_command(dry_run, importer):
                 # We first check if this is really a new tea, or if the data
                 # was not changed at all.
                 new_tea = (Tea.select()
-                              .where((Tea.vendor_internal_id == data['vendor_internal_id']) &
-                                     (Tea.vendor == imp.get_vendor()))
+                              .where((Tea.vendor_internal_id == str(data['vendor_internal_id'])) &
+                                     (Tea.vendor == vendor))
                               .count() == 0)
                 if new_tea:
                     # In case of an insertion, we add the slug and then check
                     # if the slug is unique
-                    if imp.get_vendor().name not in used_slugs:
-                        used_slugs[imp.get_vendor().name] = []
+                    if vendor.name not in used_slugs:
+                        used_slugs[vendor.name] = []
 
                     data['slug'] = slugify(data['name'])
-                    if data['slug'] in used_slugs[imp.get_vendor().name]:
+                    if data['slug'] in used_slugs[vendor.name]:
                         suffix = 1
                         while True:
                             slug = data['slug'] + '-' + str(suffix)
-                            if slug in used_slugs[imp.get_vendor().name]:
+                            if slug in used_slugs[vendor.name]:
                                 suffix += 1
                             else:
                                 data['slug'] = slug
                                 break
-                    used_slugs[imp.get_vendor().name].append(data['slug'])
+                    used_slugs[vendor.name].append(data['slug'])
 
                     teas_to_insert.append(data)
-                    if imp.get_vendor().name not in types_to_insert:
-                        types_to_insert[imp.get_vendor().name] = {}
-                    types_to_insert[imp.get_vendor().name][data['vendor_internal_id']] = types
+                    if vendor.name not in types_to_insert:
+                        types_to_insert[vendor.name] = {}
+                    types_to_insert[vendor.name][str(data['vendor_internal_id'])] = types
 
                     has_to_add_tags = False
 
             if has_to_add_tags:
-                this_tea = Tea.select(Tea.id).where((Tea.vendor_internal_id == data['vendor_internal_id']) &
-                                                    (Tea.vendor == imp.get_vendor()))
+                this_tea = Tea.select(Tea.id).where((Tea.vendor_internal_id == str(data['vendor_internal_id'])) &
+                                                    (Tea.vendor == vendor))
                 TypeOfATea.delete().where(TypeOfATea.tea == this_tea).execute()
                 if types:
                     TypeOfATea.insert_many([{'tea': this_tea, 'tea_type': tea_type} for tea_type in types]).execute()
@@ -348,7 +350,7 @@ def import_command(dry_run, importer):
     click.echo()
 
     if teas_to_insert:
-        click.echo('Inserting new records...', nl=False)
+        click.echo(f'Inserting {len(teas_to_insert)} new record{"s" if len(teas_to_insert) > 1 else ""}...', nl=False)
         Tea.insert_many(teas_to_insert).execute()
 
         # Insertion of types

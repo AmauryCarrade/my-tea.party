@@ -174,9 +174,6 @@ class NewbyImporter(TeaVendorImporter):
                 long_description = (UnicodeDammit(long_description_elem.encode_contents())
                     .unicode_markup.strip())
 
-            print(f'\n\n{long_description}')
-
-
             # Extracts tips (ugh) and ingredients
 
             for row in product_elem.select('.box-collateral .box-additional table tr'):
@@ -301,6 +298,8 @@ class NewbyImporter(TeaVendorImporter):
                 tea_id_numeric = int(self.re_remove_non_numbers.sub('', sku), 10)
             except:
                 tea_id_numeric = random.randint(10000000, 99999999)
+
+            self.teas_ids.append(tea_id_numeric)
 
 
             # Retrieves an image
