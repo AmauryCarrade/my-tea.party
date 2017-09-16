@@ -9,12 +9,13 @@ import titlecase
 
 from bs4 import BeautifulSoup, UnicodeDammit
 from itertools import cycle, islice, groupby
+from path import Path
 from slugify import slugify
 
 from .teaparty import app
 from .model import Tea, TeaType, TypeOfATea, TeaVendor, database
 from .model import get_or_create as get_or_create_model
-from .utils import save_distant_file
+from .utils import save_distant_file, generate_thumbnails, get_external_filename, is_post_processed_file
 
 import myteaparty.tea_vendors as vendors
 
@@ -290,6 +291,16 @@ def import_command(dry_run, importer):
             data['name'] = titlecase.titlecase(data['name'].title())
             data['deleted'] = None  # If a previously-deleted tea is retrieved, it is no longer deleted,
                                     # and unmarked as such in our database.
+
+            # If an illustration cannot be retrieved, the key is
+            # removed so the old one is kept in case of an update.
+            # (If this is an insertion, the default value is None
+            # anyway.)
+            # To remove a previously saved illustration, set this to
+            # an empty string.
+            if data['illustration'] is None:
+                del data['illustration']
+
             updated = (Tea.update(**data)
                           .where((Tea.vendor_internal_id == str(data['vendor_internal_id'])) &
                                  (Tea.vendor == vendor))
@@ -384,3 +395,29 @@ def import_command(dry_run, importer):
         click.echo('Committing changes...', nl=False)
         database.commit()
     click.echo(' Done.')
+
+
+@app.cli.command('generate-thumbnails')
+@click.option('--regenerate', is_flag=True, default=False, help='If specified, existing thumbnails will be re-genered')
+@click.option('--directory', default=Path(app.root_path) / 'static' / app.config['STATIC_FILES_FOLDER'], show_default=True, help='The root directory where files are stored')
+def generate_thumbnails_command(regenerate, directory):
+    directory = Path(directory)
+    if not directory.exists():
+        click.echo('Directory does not exists. Exiting.', err=True)
+        return
+
+    formats = list(app.config['STATIC_FILES_FORMATS'].keys())
+    formats += [format + '@2x' for format in formats]
+    
+    for file in directory.walkfiles():
+        if is_post_processed_file(file):
+            continue
+
+        file_dir = file.dirname()
+        files_all_ok = all([(file_dir / get_external_filename(file, file_format)).exists() for file_format in formats])
+        
+        if not files_all_ok or regenerate:
+            click.echo(f'Generating thumbnails for {file.name}…{" [regenerated]" if regenerate else ""}')
+            generate_thumbnails(file)
+
+    click.echo('Done.')

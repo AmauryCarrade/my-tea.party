@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-{% import 'macros/files.html' as files %}
 {% import 'macros/teas.html' as tea_utils %}
 
 {% block hero_attributes %}id="hero-list"{% endblock %}
@@ -17,7 +16,7 @@
                         <a href="{{ url_for('tea', tea_vendor=(tea.vendor_slug if tea.vendor_slug else (tea.vendor.slug if tea.vendor else '')), tea_slug=tea.slug) }}">
                             <div class="card-image media-left media is-pulled-left">
                                 <figure class="image">
-                                    <img src="{{ files.external(tea.illustration) }}" alt="{{ tea.name }}" />
+                                    <img src="{{ external(tea.illustration, 'small') }}" alt="{{ tea.name }}" />
                                 </figure>
                             </div>
                             <div class="card-content">

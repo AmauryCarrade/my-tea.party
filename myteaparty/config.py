@@ -22,6 +22,13 @@ ITEMS_PER_PAGE = 12
 
 STATIC_FILES_FOLDER = 'r'
 
+# The format is (width, height);
+# None means don't consider and resize using the other
+# respecting proportions
+STATIC_FILES_FORMATS = {
+	'small': (None, 144)
+}
+
 
 # A random secret key
 

@@ -5,8 +5,11 @@ Flask==0.12.2
 itsdangerous==0.24
 Jinja2==2.9.6
 MarkupSafe==1.0
+olefile==0.44
 packaging==16.8
+path.py==10.4
 peewee==2.10.1
+Pillow==4.2.1
 PyMySQL==0.7.11
 pyparsing==2.2.0
 python-slugify==1.2.4

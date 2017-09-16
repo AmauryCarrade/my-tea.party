@@ -1,3 +1,0 @@
-{% macro external(filename) -%}
-    {{ url_for('static', filename=config['STATIC_FILES_FOLDER'] + '/' + filename[0:2] + '/' + filename) }}
-{%- endmacro %}
