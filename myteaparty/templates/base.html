@@ -24,6 +24,29 @@
     <link href="{{ url_for('static', filename='assets/css/site.css') }}" rel="stylesheet" />
 
     {% block stylesheets %}{% endblock %}
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event)
+        {
+            if (window.devicePixelRatio == 2 && document.querySelectorAll)
+            {
+                  var images = document.querySelectorAll("img.has-hires");
+
+                  for(var i = 0; i < images.length; i++)
+                  {
+                    var filename = images[i].src;
+                    var lastIndex = filename.lastIndexOf(".");
+                    var imageType = (lastIndex < 1) ? "" : filename.substr(lastIndex + 1);
+                    var imageName = (lastIndex < 1) ? filename : filename.substr(0, lastIndex);
+
+                    console.log(imageName, imageType);
+
+                    imageName += "@2x" + '.' + imageType;
+                    images[i].src = imageName;
+                  }
+             }
+        });
+    </script>
 </head>
 
 <body>
@@ -35,7 +58,7 @@
                 <div class="container">
                     <div class="nav-left is-hidden-mobile">
                         {% block menu_left %}
-                        <a href="{{ url_for('by_type', tea_type_slug='noir') }}" class="nav-item">Tous les thés</a>
+                        <a href="{{ url_for('all_teas') }}" class="nav-item">Tous les thés</a>
                         <a href="{{ url_for('by_type', tea_type_slug='darjeeling') }}" class="nav-item">Origines</a>
                         {% endblock %}
                     </div>

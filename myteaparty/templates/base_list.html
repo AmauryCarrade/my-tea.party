@@ -16,7 +16,7 @@
                         <a href="{{ url_for('tea', tea_vendor=(tea.vendor_slug if tea.vendor_slug else (tea.vendor.slug if tea.vendor else '')), tea_slug=tea.slug) }}">
                             <div class="card-image media-left media is-pulled-left">
                                 <figure class="image">
-                                    <img src="{{ external(tea.illustration, 'small') }}" alt="{{ tea.name }}" />
+                                    <img src="{{ external(tea.illustration, 'small') }}" alt="{{ tea.name }}" class="has-hires" />
                                 </figure>
                             </div>
                             <div class="card-content">
@@ -42,7 +42,7 @@
         {% if pagination and pagination.pages > 1%}
             {% with page=pagination.page, pages=pagination.pages %}
                 <nav class="pagination is-centered">
-                    <a class="pagination-previous icon{% if page == 1 %} is-disabled{% endif %}"{% if page != 1 %} href="{{ update_query(page=1) }}"{% endif %}>
+                    <a class="pagination-previous icon{% if page == 1 %} is-disabled{% endif %}"{% if page != 1 %} href="{{ update_query(page=page-1) }}"{% endif %}>
                         <span class="sr-only">Page précédente</span>
                         <span class="fa fa-arrow-left" aria-hidden="true"></span>
                     </a>
