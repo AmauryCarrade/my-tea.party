@@ -381,7 +381,12 @@ def import_command(dry_run, importer):
                            .join(TeaVendor)
                            .where(Tea.vendor_internal_id << list(types_to_insert[types_to_insert_vendor].keys()) &
                                   TeaVendor.name == types_to_insert_vendor)):
-                for tea_type in types_to_insert[types_to_insert_vendor][tea.vendor_internal_id]:
+
+                if (str(tea.vendor_internal_id) not in types_to_insert[types_to_insert_vendor]
+                    or not types_to_insert[types_to_insert_vendor][str(tea.vendor_internal_id)]):
+                    continue  # No types for this one
+
+                for tea_type in types_to_insert[types_to_insert_vendor][str(tea.vendor_internal_id)]:
                     types_insert.append({'tea': tea, 'tea_type': tea_type})
 
         if types_insert:
