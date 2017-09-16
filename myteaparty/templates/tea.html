@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 
-{% import 'macros/files.html' as files %}
-
-
 {% block title %}{{ tea.name }}&nbsp;&nbsp;&middot;&nbsp;&nbsp;{% endblock %}
 
 {% block javascripts %}
@@ -50,7 +47,7 @@
             </div>
             <div class="column is-narrow tea-title-aside">
                 <div class="box tea-icon">
-                    <img alt="Illustration : {{ tea.name.lower() }}" src="{{ files.external(tea.illustration) }}" />
+                    <img alt="Illustration : {{ tea.name.lower() }}" src="{{ external(tea.illustration) }}" />
                 </div>
             </div>
         </div>
@@ -132,13 +129,27 @@
                     <h3 class="title is-4">À propos de ce thé</h3>
                     <article class="content">
                         {{ tea.long_description|safe }}
+
+                        {%- if tea.tips_max_brews > 1 %}
+                        <p class="multiple_brews">
+                            Ce thé peut être infusé
+                            {% if tea.tips_max_brews == 2 -%}
+                                une seconde fois
+                            {%- else -%}
+                                jusqu'à {{ tea.tips_max_brews }} fois
+                            {%- endif -%}.
+                        </p>
+                        {%- endif -%}
                     </article>
 
                     <aside class="tea-source">
                         <p>
                             Ce thé est une création de <a href="{{ tea.link }}" rel="nofollow">{{ tea.vendor.name }}</a>.
                             {% if tea.price -%}
-                                Il est vendu {{ tea.price|int }} € {% if tea.price_unit[:2].isdigit() %}pour{% else %}par{% endif %} {{ tea.price_unit }}.
+                                Il est vendu {{ tea.price|int }} €
+                                {%- if tea.price_unit %}
+                                    {% if tea.price_unit[:2].isdigit() %}pour{% else %}par{% endif %} {{ tea.price_unit }}
+                                {%- endif -%}.
                             {%- endif -%}
                             <br />
                             <span class="last-update">

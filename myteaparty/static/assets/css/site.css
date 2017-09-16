@@ -270,6 +270,11 @@ body > section.hero header h1 {
     width: 100%;
 }
 
+#tea-details .multiple_brews {
+    margin-top: 1em;
+    font-style: italic;
+}
+
 #tea-details .tea-source {
     font-style: italic;
     border-top: solid 1px #dbdbdb;
