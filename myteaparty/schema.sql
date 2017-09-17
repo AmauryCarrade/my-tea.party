@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `tea_teas` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'The tea name, as displayed in the titles',
   `vendor` int(10) NOT NULL COMMENT 'The tea vendor ID',
-  `vendor_id` varchar(30) CHARACTER SET utf8 DEFAULT NULL COMMENT 'The vendor''s own tea ID, e.g. 7004 for Mariage Frères''s Paris Breakfast Tea',
+  `vendor_id` varchar(256) CHARACTER SET utf8 DEFAULT NULL COMMENT 'The vendor''s own tea ID, e.g. 7004 for Mariage Frères''s Paris Breakfast Tea',
   `slug` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'The tea slug as visible in the URL',
   `description` varchar(256) CHARACTER SET utf8 DEFAULT NULL COMMENT 'A small description for the tea (one line), displayed as subtitle',
   `long_description` text CHARACTER SET utf8 COMMENT 'A long description for the tea, can be extanded over multiple paragraphs',

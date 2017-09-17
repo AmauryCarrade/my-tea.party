@@ -341,7 +341,7 @@ def import_command(dry_run, importer):
 
             if has_to_add_tags:
                 this_tea = Tea.select(Tea.id).where((Tea.vendor_internal_id == str(data['vendor_internal_id'])) &
-                                                    (Tea.vendor == vendor))
+                                                    (Tea.vendor == vendor)).limit(1)
                 TypeOfATea.delete().where(TypeOfATea.tea == this_tea).execute()
                 if types:
                     TypeOfATea.insert_many([{'tea': this_tea, 'tea_type': tea_type} for tea_type in types]).execute()

@@ -294,10 +294,14 @@ class NewbyImporter(TeaVendorImporter):
             # Retrieves an unique ID
 
             try:
-                sku = product_elem.find(class_='sku').find(class_='value').get_text().strip()
-                tea_id_numeric = int(self.re_remove_non_numbers.sub('', sku), 10)
+                tea_id_numeric = product_elem.find(class_='sku').find(class_='value').get_text().strip()
             except:
                 tea_id_numeric = random.randint(10000000, 99999999)
+
+            if tea_id_numeric in self.teas_ids:
+                tea_id_numeric += '-' + link.split('/')[-1]
+            if tea_id_numeric in self.teas_ids:
+                tea_id_numeric += random.randint(10000000, 99999999)
 
             self.teas_ids.append(tea_id_numeric)
 
@@ -315,7 +319,7 @@ class NewbyImporter(TeaVendorImporter):
 
             # Retrieves the price
 
-            price = price_unit = None
+            price = None
             price_elem = product_elem.find(class_='price-box')
 
             if price_elem:
@@ -325,12 +329,12 @@ class NewbyImporter(TeaVendorImporter):
                     try:
                         price = float(self.re_remove_non_numbers.sub('', price_raw).replace(',', '.'))
                     except:
-                        price = price_unit = None
+                        price = None
 
 
             # Determines the types
 
-            types = self._retrieve_teas_types(*tea_tags, description, long_description)
+            types = self._retrieve_teas_types(*tea_tags, name, description, long_description)
 
 
             # Returns the thing
