@@ -386,10 +386,15 @@ def import_command(dry_run, importer):
                     or not types_to_insert[types_to_insert_vendor][str(tea.vendor_internal_id)]):
                     continue  # No types for this one
 
+                # We remove existing types, if any
+                TypeOfATea.delete().where(TypeOfATea.tea == tea).execute()
+
                 for tea_type in types_to_insert[types_to_insert_vendor][str(tea.vendor_internal_id)]:
                     types_insert.append({'tea': tea, 'tea_type': tea_type})
 
         if types_insert:
+            # Removes duplicates, if any
+            types_insert = [i for n, i in enumerate(types_insert) if i not in types_insert[n + 1:]]
             TypeOfATea.insert_many(types_insert).execute()
 
         click.echo(' Done.')
