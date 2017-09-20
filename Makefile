@@ -1,5 +1,5 @@
 styles:
-	sass --scss -t compressed myteaparty/static/assets/sass/myteaparty.scss > myteaparty/static/assets/css/myteaparty.min.css
+	sass --scss -t compressed --sourcemap=auto --unix-newlines myteaparty/static/assets/sass/myteaparty.scss > myteaparty/static/assets/css/myteaparty.min.css
 
 watch:
 	sass --scss -t compressed --watch myteaparty/static/assets/sass/myteaparty.scss:myteaparty/static/assets/css/myteaparty.min.css
