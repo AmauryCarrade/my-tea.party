@@ -1,0 +1,6 @@
+[submodule "myteaparty/static/assets/sass/bulma"]
+	path = myteaparty/static/assets/sass/bulma
+	url = https://github.com/jgthms/bulma.git
+[submodule "myteaparty/static/assets/sass/bulma-tooltip"]
+	path = myteaparty/static/assets/sass/bulma-tooltip
+	url = https://github.com/Wikiki/bulma-tooltip.git

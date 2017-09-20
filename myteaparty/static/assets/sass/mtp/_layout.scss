@@ -1,0 +1,82 @@
+html {
+    height: 100vh;
+    background: $page_background;
+}
+
+body {
+    height: 100vh;
+    background: $page_background;
+
+    > section.hero {
+        background-color: $page_background !important;
+        background-image: $banner_image;
+        background-position: 66% 12%;
+
+        header.nav {
+            text-align: center;
+            margin-top: 8px;
+            box-shadow: none !important;
+
+            h1 {
+                font-size: 180%;
+                position: relative;
+                margin-left: 1rem;
+            }
+
+            .nav-right, .nav-left, .nav-center {
+                overflow: hidden;
+            }
+        }
+    }
+}
+
+.search-query:focus + button {
+    z-index: 3;
+}
+
+.main-tea-search.main-tea-search-inmenu {
+    padding: 0;
+    margin: 0;
+    width: 50%;
+    position: relative;
+    top: 8px;
+
+    input.big-search-input {
+        font-size: 1em;
+        padding: 4px;
+        border-radius: 4px;
+    }
+
+    .main-search-input-container button {
+        left: -2px;
+        top: -25px;
+        font-size: .9em;
+    }
+}
+
+@media(max-width: 769px) {
+    .hero .hero-head header.nav {
+        margin-top: 0;
+
+        .nav-left h1 {
+            top: .5em;
+        }
+
+        .nav-right a.nav-item {
+            display: inline;
+            position: relative;
+            top: .8rem;
+        }
+    }
+    .main-tea-search.main-tea-search-inmenu {
+        width: 100%;
+        padding-right: 0.4em;
+        top: 16px;
+    }
+}
+
+@media only screen and(max-width: 1000px) and(min-width: 769px) {
+    .box {
+        border-radius: 0;
+    }
+}

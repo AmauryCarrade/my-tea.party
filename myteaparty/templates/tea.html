@@ -35,13 +35,13 @@
                 <h1 class="title">
                     {{ tea.name }}
                     <span class="is-hidden-mobile">
-                        <dfn class="tooltip tooltip-icon-title" aria-label="Ajouter aux favoris">
+                        <dfn class="tooltip is-tooltip-right tooltip-icon-title" aria-label="Ajouter à ma liste de thé" data-tooltip="Ajouter à ma liste de thé">
                             <a class="icon is-medium"><span class="fa fa-star-o"></span></a>
                         </dfn>
                     </span>
                 </h1>
                 <h2 class="subtitle">{{ tea.description }}</h2>
-                <aside class="is-hidden-tablet">
+                <aside class="is-hidden-tablet" aria-label="Ajouter à ma liste de thé">
                     <a class="icon is-medium"><span class="fa fa-star-o"></span></a>
                 </aside>
             </div>

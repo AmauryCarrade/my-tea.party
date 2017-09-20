@@ -1,0 +1,175 @@
+#hero-tea {
+    overflow: hidden;
+    .tea-icon {
+        width: 303px;
+        position: absolute;
+        top: -22px;
+        right: 18px;
+    }
+    .tea-title .icon {
+        margin-left: .4em;
+        position: relative;
+        top: 2px;
+    }
+}
+
+#tea-details {
+    margin-top: 40px;
+
+    .content {
+        font-size: 1.05em;
+    }
+
+    .tea-actions {
+        margin-top: 30px;
+        text-align: center;
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    .tea-timer-button {
+        width: 100%;
+    }
+
+    .multiple_brews {
+        margin-top: 1em;
+        font-style: italic;
+    }
+
+    .tea-source {
+        font-style: italic;
+        border-top: solid 1px #dbdbdb;
+        padding-top: 1.5rem;
+        a {
+            font-weight: bold;
+        }
+        .last-update {
+            color: #777;
+        }
+    }
+
+    .tea-types {
+        float: right;
+    }
+
+    dl.tips {
+        margin-left: 0;
+        dt {
+            font-size: 1.2em;
+            font-variant: small-caps;
+        }
+        dd {
+            font-size: 1.8em;
+            margin-bottom: 1em;
+            &.tips_raw {
+                font-size: 1.5em;
+            }
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .tea-timer .progress-bar {
+        display: none;
+    }
+}
+
+.button-progress {
+    display: block;
+    overflow: hidden;
+    padding: 0;
+
+    .button-progress-label {
+        display: block;
+        position: relative;
+        top: 19%;
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+    }
+
+    &.card-footer-item {
+        .button-progress-label {
+            padding: .75rem;
+            text-align: center;
+        }
+        .button-progress-bar {
+            bottom: 0;
+        }
+        &.active .button-progress-label {
+            padding-bottom: calc(.75rem - 6px);
+            text-align: center;
+        }
+    }
+
+    .button-progress-bar {
+        border: 3px solid $primary;
+        display: none;
+        position: relative;
+        left: 0;
+        bottom: -10px;
+    }
+
+    &.active {
+        background-color: transparent;
+        border-color: $primary;
+        color: $primary;
+        cursor: default;
+        &:hover {
+            background-color: transparent;
+            border-color: $primary;
+            color: $primary;
+            cursor: default;
+        }
+        &:active {
+            background-color: transparent;
+            border-color: $primary;
+            color: $primary;
+            cursor: default;
+        }
+        &:focus {
+            background-color: transparent;
+            border-color: $primary;
+            color: $primary;
+            cursor: default;
+        }
+        .button-progress-bar {
+            display: block;
+        }
+    }
+}
+
+@media(max-width: 769px) {
+    #hero-tea {
+        .tea-title {
+            text-align: center;
+            aside .icon {
+                margin-left: 0;
+            }
+        }
+
+        .tea-icon {
+            display: none;
+        }
+
+        .tea-title-aside {
+            display: none;
+        }
+    }
+
+    #tea-details {
+        margin-left: 6px;
+        margin-right: 6px;
+
+        .tea-about {
+            border-top: solid 1px #dbdbdb;
+            padding-top: 1.5rem;
+        }
+
+        .tips {
+            margin-top: 25px;
+            margin-bottom: 8px;
+        }
+    }
+}
