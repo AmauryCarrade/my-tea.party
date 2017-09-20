@@ -296,12 +296,12 @@ class NewbyImporter(TeaVendorImporter):
             try:
                 tea_id_numeric = product_elem.find(class_='sku').find(class_='value').get_text().strip()
             except:
-                tea_id_numeric = random.randint(10000000, 99999999)
+                tea_id_numeric = str(random.randint(10000000, 99999999))
 
             if tea_id_numeric in self.teas_ids:
                 tea_id_numeric += '-' + link.split('/')[-1]
             if tea_id_numeric in self.teas_ids:
-                tea_id_numeric += random.randint(10000000, 99999999)
+                tea_id_numeric += str(random.randint(10000000, 99999999))
 
             self.teas_ids.append(tea_id_numeric)
 
