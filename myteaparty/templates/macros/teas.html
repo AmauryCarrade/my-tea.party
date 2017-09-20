@@ -2,7 +2,12 @@
     {% if tea.tips_mass %}
         <li title="Quantité de thé">
             <span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span>
-            {{ tea.tips_mass / 1000 }} g {% if tea.tips_volume %}pour {{ tea.tips_volume }} cl.{% endif %}
+            {%- if tea.tips_mass >= 0 -%}
+                {{ tea.tips_mass / 1000 }} g
+            {%- else -%}
+                {{ -tea.tips_mass }} sachet{%- if -tea.tips_mass > 1 -%}s{%- endif -%}
+            {%- endif %}
+            {% if tea.tips_volume %}pour {{ tea.tips_volume }} cl.{% endif %}
         </li>
     {% endif %}
     {% if tea.tips_temperature %}
