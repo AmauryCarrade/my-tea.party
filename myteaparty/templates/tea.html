@@ -8,6 +8,8 @@
 
 {% block social_tags %}
     {%- set tea_description_line = tea.description.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').replace('  ', ' ').strip() -%}
+    {%- if tea_tips_short -%}{% set tea_description_line = tea_description_line + ' ⋅ ' + tea_tips_short -%}{%- endif -%}
+
     <meta name="description" content="{{ tea_description_line }}" />
     <meta name="image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
 
@@ -22,14 +24,50 @@
     {% if tea.vendor.twitter %}<meta name="twitter:creator" content="@{{ tea.vendor.twitter }}" />{% endif %}
     <meta name="twitter:image:src" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
 
-    <meta name="og:title" content="{{ tea.name }}">
-    <meta name="og:description" content="{{ tea_description_line }}" />
-    <meta name="og:image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
+    <meta name="og:title" property="og:title" content="{{ tea.name }}">
+    <meta name="og:description" property="og:description" content="{{ tea_description_line }}" />
+    <meta name="og:image" property="og:image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
 
-    <meta name="og:type" content="product">
-    <meta name="product:price:currency" content="€">
-    <meta name="product:price:amount" content="{{ tea.price }}">
-    <meta name="product:brand" content="{{ tea.vendor.name }}">
+    <meta name="og:type" property="og:title" content="product">
+    <meta name="product:price:currency" property="product:price:currency" content="€">
+    <meta name="product:price:amount" property="product:price:amount" content="{{ tea.price }}">
+    <meta name="product:brand" property="product:brand" content="{{ tea.vendor.name }}">
+
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "item":
+                {
+                    "@id": "{{ url_for('homepage', _external=True) }}",
+                    "name": "My Tea Party"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@id": "{{ url_for('by_vendor', vendor_slug=tea.vendor.slug, _external=True) }}",
+                  "name": "{{ tea.vendor.name }}",
+                  "image": "{{ external(tea.vendor.logo, file_format='open-graph', absolute=True) }}"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@id": "{{ url_for('tea', tea_slug=tea.slug, tea_vendor=tea.vendor.slug, _external=True) }}",
+                  "name": "{{ tea.name }}",
+                  "image": "{{ external(tea.illustration, file_format='open-graph', absolute=True) }}"
+                }
+            }
+        ]
+    }
+    </script>
 {% endblock %}
 
 

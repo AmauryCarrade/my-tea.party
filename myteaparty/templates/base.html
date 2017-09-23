@@ -25,7 +25,20 @@
     <meta name="og:locale" content="fr_FR" />
     <meta name="og:type" content="website" />
 
-    
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "{{ url_for('homepage', _external=True) }}",
+        "potentialAction": [{
+            "@type": "SearchAction",
+            "target": "{{ url_for('search', _external=True) }}?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }}
+    }
+    </script>
+
+
 
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event)
