@@ -25,13 +25,15 @@ def tea(tea_vendor, tea_slug):
 
     tea_tips_short = ''
     if tea.tips_mass:
-        tea_tips_short += (str(tea.tips_mass / 1000) + 'g') if tea.tips_mass > 0 else str(-int(tea.tips_mass)) + ' sachets'
+        tea_tips_short += (str(tea.tips_mass / 1000).replace('.', ',') + 'g') if tea.tips_mass > 0 else str(-int(tea.tips_mass)) + ' sachets'
     if tea.tips_volume:
         tea_tips_short += f'{" dans " if tea.tips_mass else ""}{tea.tips_volume} cL'
     if tea.tips_temperature:
         tea_tips_short += f'{" d&rsquo;eau à " if tea_tips_short else ""}{tea.tips_temperature}°C'
     if tea.tips_duration:
         tea_tips_short += f'{", pendant " if tea_tips_short else ""}{tea.tips_duration // 60} minute{"s" if tea.tips_duration >= 120 else ""}'
+    if tea_tips_short:
+        tea_tips_short += '.'
 
     return render_template('tea.html', tea=tea, tea_tips_short=tea_tips_short, tea_types=tea_types)
 

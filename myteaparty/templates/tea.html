@@ -8,7 +8,7 @@
 
 {% block social_tags %}
     {%- set tea_description_line = tea.description.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').replace('  ', ' ').replace('&', '&amp;').strip() -%}
-    {%- if tea_tips_short -%}{% set tea_description_line = tea_description_line + '  ⋅  ' + tea_tips_short -%}{%- endif -%}
+    {%- if tea_tips_short -%}{% set tea_description_line = tea_description_line + ' — ' + tea_tips_short -%}{%- endif -%}
 
     <meta name="description" content="{{ tea_description_line|safe }}" />
     <meta name="image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
@@ -23,6 +23,7 @@
     <meta name="twitter:site" content="@M_TeaParty" />
     {% if tea.vendor.twitter %}<meta name="twitter:creator" content="@{{ tea.vendor.twitter }}" />{% endif %}
     <meta name="twitter:image:src" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
+    <meta name="twitter:image:alt" content="Aperçu du thé {{ tea.name }}" />
 
     <meta name="og:title" property="og:title" content="{{ tea.name }}">
     <meta name="og:description" property="og:description" content="{{ tea_description_line|safe }}" />
