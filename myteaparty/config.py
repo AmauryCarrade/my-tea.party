@@ -26,7 +26,8 @@ STATIC_FILES_FOLDER = 'r'
 # None means don't consider and resize using the other
 # respecting proportions
 STATIC_FILES_FORMATS = {
-	'small': (None, 144)
+	'small': (None, 144),
+	'open-graph': (600, None)
 }
 
 

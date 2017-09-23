@@ -34,6 +34,7 @@ class MariageFreresImporter(TeaVendorImporter):
             defaults={
                 'description': 'Thé français depuis 1854',
                 'link': self.BASE_URL,
+                'twitter': 'MariageFreres',
                 'logo': mf_logo
             }
         )

@@ -23,6 +23,7 @@ class TeaVendor(BaseModel):
     link = CharField()
     logo = CharField(null=True)
     name = CharField()
+    twitter = CharField(null=True)
     slug = CharField(unique=True)
     order = IntegerField(default=0)
 

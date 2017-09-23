@@ -36,6 +36,7 @@ class NewbyImporter(TeaVendorImporter):
             defaults={
                 'description': 'Luxury teas, tisanes & tea gifts',
                 'link': self.HOME_URL,
+                'twitter': 'NewbyTeas',
                 'logo': newby_logo
             }
         )

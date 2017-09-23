@@ -3,21 +3,47 @@
 {% block title %}{{ tea.name }}&nbsp;&nbsp;&middot;&nbsp;&nbsp;{% endblock %}
 
 {% block javascripts %}
-<script type="text/javascript" src="{{ url_for('static', filename='assets/js/time-counters.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='assets/js/time-counters.js') }}"></script>
+{% endblock %}
+
+{% block social_tags %}
+    {%- set tea_description_line = tea.description.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').replace('  ', ' ').strip() -%}
+    <meta name="description" content="{{ tea_description_line }}" />
+    <meta name="image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
+
+    <meta itemprop="name" content="{{ tea.name }}" />
+    <meta itemprop="description" content="{{ tea_description_line }}" />
+    <meta itemprop="image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{{ tea.name }}" />
+    <meta name="twitter:description" content="{{ tea_description_line }}" />
+    <meta name="twitter:site" content="@M_TeaParty" />
+    {% if tea.vendor.twitter %}<meta name="twitter:creator" content="@{{ tea.vendor.twitter }}" />{% endif %}
+    <meta name="twitter:image:src" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
+
+    <meta name="og:title" content="{{ tea.name }}">
+    <meta name="og:description" content="{{ tea_description_line }}" />
+    <meta name="og:image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
+
+    <meta name="og:type" content="product">
+    <meta name="product:price:currency" content="€">
+    <meta name="product:price:amount" content="{{ tea.price }}">
+    <meta name="product:brand" content="{{ tea.vendor.name }}">
 {% endblock %}
 
 
 {% block menu_right %}
-<form class="main-tea-search main-tea-search-inmenu nav-item" action="{{ url_for('search') }}">
-    <div class="control main-search-input-container">
-        <label class="sr-only" for="search_tea">Rechercher le nom d'un thé...</label>
-        <input type="search" class="big-search-input" id="search_tea" name="q" placeholder="Rechercher..." />
-        <button type="submit">
-            <span class="fa fa-search"></span>
-            <span class="sr-only">Rechercher</span>
-        </button>
-    </div>
-</form>
+    <form class="main-tea-search main-tea-search-inmenu nav-item" action="{{ url_for('search') }}">
+        <div class="control main-search-input-container">
+            <label class="sr-only" for="search_tea">Rechercher le nom d'un thé...</label>
+            <input type="search" class="big-search-input" id="search_tea" name="q" placeholder="Rechercher..." />
+            <button type="submit">
+                <span class="fa fa-search"></span>
+                <span class="sr-only">Rechercher</span>
+            </button>
+        </div>
+    </form>
 {% endblock %}
 
 {% block menu_right_mobile %}

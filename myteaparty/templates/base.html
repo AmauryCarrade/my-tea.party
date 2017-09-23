@@ -19,6 +19,14 @@
 
     {% block stylesheets %}{% endblock %}
 
+    {% block social_tags %}{% endblock %}
+    <meta name="og:url" content="{{ url_for('homepage', _external=True) }}" />
+    <meta name="og:site_name" content="My Tea Party" />
+    <meta name="og:locale" content="fr_FR" />
+    <meta name="og:type" content="website" />
+
+    
+
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event)
         {

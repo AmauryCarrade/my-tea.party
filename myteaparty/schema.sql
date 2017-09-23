@@ -132,11 +132,13 @@ CREATE TABLE IF NOT EXISTS `tea_vendors` (
   `slug` varchar(32) CHARACTER SET utf8 NOT NULL COMMENT 'The vendor slug used in the URLs as an identifier',
   `description` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'A small description for this vendor',
   `logo` varchar(70) CHARACTER SET utf8 DEFAULT NULL COMMENT 'A reference to this vendor''s logo',
+  `twitter` varchar(70) CHARACTER SET utf8 DEFAULT NULL COMMENT 'The vendor''s Twitter name (without @)',
   `link` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'A link to the vendor''s homepage',
   `order` int(6) CHARACTER SET utf8 NOT NULL DEFAULT 0 COMMENT 'The vendor''s order',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`,`link`),
-  UNIQUE KEY `slug` (`slug`)
+  UNIQUE KEY `slug` (`slug`),
+  UNIQUE KEY `twitter` (`twitter`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 --

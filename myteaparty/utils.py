@@ -105,6 +105,6 @@ def update_query(**new_values):
     return '{}?{}'.format(request.path, url_encode(args))
 
 @app.template_global()
-def external(file_name, file_format=None):
+def external(file_name, file_format=None, absolute=False):
     file_name = get_external_filename(file_name, file_format)
-    return url_for('static', filename=f'{app.config["STATIC_FILES_FOLDER"]}/{file_name[0:2]}/{file_name}')
+    return url_for('static', filename=f'{app.config["STATIC_FILES_FOLDER"]}/{file_name[0:2]}/{file_name}', _external=absolute)
