@@ -7,25 +7,25 @@
 {% endblock %}
 
 {% block social_tags %}
-    {%- set tea_description_line = tea.description.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').replace('  ', ' ').strip() -%}
-    {%- if tea_tips_short -%}{% set tea_description_line = tea_description_line + ' ⋅ ' + tea_tips_short -%}{%- endif -%}
+    {%- set tea_description_line = tea.description.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').replace('  ', ' ').replace('&', '&amp;').strip() -%}
+    {%- if tea_tips_short -%}{% set tea_description_line = tea_description_line + '  ⋅  ' + tea_tips_short -%}{%- endif -%}
 
-    <meta name="description" content="{{ tea_description_line }}" />
+    <meta name="description" content="{{ tea_description_line|safe }}" />
     <meta name="image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
 
     <meta itemprop="name" content="{{ tea.name }}" />
-    <meta itemprop="description" content="{{ tea_description_line }}" />
+    <meta itemprop="description" content="{{ tea_description_line|safe }}" />
     <meta itemprop="image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
 
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="{{ tea.name }}" />
-    <meta name="twitter:description" content="{{ tea_description_line }}" />
+    <meta name="twitter:description" content="{{ tea_description_line|safe }}" />
     <meta name="twitter:site" content="@M_TeaParty" />
     {% if tea.vendor.twitter %}<meta name="twitter:creator" content="@{{ tea.vendor.twitter }}" />{% endif %}
     <meta name="twitter:image:src" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
 
     <meta name="og:title" property="og:title" content="{{ tea.name }}">
-    <meta name="og:description" property="og:description" content="{{ tea_description_line }}" />
+    <meta name="og:description" property="og:description" content="{{ tea_description_line|safe }}" />
     <meta name="og:image" property="og:image" content="{{ external(tea.illustration, file_format='open-graph', absolute=True) }}" />
 
     <meta name="og:type" property="og:type" content="product">
