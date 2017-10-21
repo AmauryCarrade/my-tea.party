@@ -111,19 +111,26 @@ def external(file_name, file_format=None, absolute=False):
 
 @app.template_global()
 def url_for_tea(tea, **kwargs):
-    vendor = ''
+    vendor_slug = ''
 
     if hasattr(tea, 'vendor_slug'):
-        vendor = tea.vendor_slug
+        vendor_slug = tea.vendor_slug
     elif 'vendor_slug' in tea:
-        vendor = tea['vendor_slug']
+        vendor_slug = tea['vendor_slug']
     elif hasattr(tea, 'vendor') and tea.vendor:
-        vendor = tea.vendor.slug
+        vendor_slug = tea.vendor.slug
+
+    tea_slug = ''
+
+    if hasattr(tea, 'slug'):
+        tea_slug = tea.slug
+    elif 'slug' in tea:
+        tea_slug = tea['slug']
 
     return url_for(
         'tea',
-        tea_vendor=vendor,
-        tea_slug=tea.slug,
+        tea_vendor=vendor_slug,
+        tea_slug=tea_slug,
         **kwargs
     )
 
