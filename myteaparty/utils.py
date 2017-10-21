@@ -115,7 +115,7 @@ def url_for_tea(tea, **kwargs):
 
     if hasattr(tea, 'vendor_slug'):
         vendor_slug = tea.vendor_slug
-    elif 'vendor_slug' in tea:
+    elif isinstance(tea, dict) and 'vendor_slug' in tea:
         vendor_slug = tea['vendor_slug']
     elif hasattr(tea, 'vendor') and tea.vendor:
         vendor_slug = tea.vendor.slug
@@ -124,7 +124,7 @@ def url_for_tea(tea, **kwargs):
 
     if hasattr(tea, 'slug'):
         tea_slug = tea.slug
-    elif 'slug' in tea:
+    elif isinstance(tea, dict) and 'slug' in tea:
         tea_slug = tea['slug']
 
     return url_for(
