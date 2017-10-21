@@ -84,7 +84,8 @@ class TypeOfATea(BaseModel):
 
 class TeaList(BaseModel):
     creator_ip = CharField()
-    key = CharField(unique=True)
+    share_key = CharField(unique=True)
+    cookie_key = CharField(unique=True)
 
     class Meta:
         db_table = 'tea_lists'

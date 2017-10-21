@@ -61,7 +61,7 @@
                 "@type": "ListItem",
                 "position": 3,
                 "item": {
-                  "@id": "{{ url_for('tea', tea_slug=tea.slug, tea_vendor=tea.vendor.slug, _external=True) }}",
+                  "@id": "{{ url_for_tea(tea, _external=True) }}",
                   "name": "{{ tea.name }}",
                   "image": "{{ external(tea.illustration, file_format='open-graph', absolute=True) }}"
                 }
@@ -93,6 +93,9 @@
 {% block hero_attributes %}id="hero-tea"{% endblock %}
 
 {% block hero_body %}
+{%- set list_tooltip = "Retirer de ma liste de thés" if is_in_list else "Ajouter à ma liste de thés" -%}
+{%- set list_icon = "fa-star" if is_in_list else "fa-star-o" -%}
+{%- set list_link = url_for('remove_tea_from_list', tea_id=tea.id) if is_in_list else url_for('add_tea_to_list', tea_id=tea.id) -%}
 <div class="hero-body">
     <div class="container">
         <div class="columns is-vcentered">
@@ -100,14 +103,16 @@
                 <h1 class="title">
                     {{ tea.name }}
                     <span class="is-hidden-mobile">
-                        <dfn class="tooltip is-tooltip-right tooltip-icon-title" aria-label="Ajouter à ma liste de thé" data-tooltip="Ajouter à ma liste de thé">
-                            <a class="icon is-medium"><span class="fa fa-star-o"></span></a>
+                        <dfn class="tooltip is-tooltip-right tooltip-icon-title"
+                             aria-label="{{ list_tooltip }}"
+                             data-tooltip="{{ list_tooltip }}">
+                            <a class="icon is-medium" href="{{ list_link }}"><span class="fa {{ list_icon }}"></span></a>
                         </dfn>
                     </span>
                 </h1>
                 <h2 class="subtitle">{{ tea.description }}</h2>
-                <aside class="is-hidden-tablet" aria-label="Ajouter à ma liste de thé">
-                    <a class="icon is-medium"><span class="fa fa-star-o"></span></a>
+                <aside class="is-hidden-tablet" aria-label="{{ list_tooltip }}">
+                    <a class="icon is-large" href="{{ list_link }}"><span class="fa {{ list_icon }}"></span></a>
                 </aside>
             </div>
             <div class="column is-narrow tea-title-aside">

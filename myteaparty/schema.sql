@@ -15,10 +15,12 @@ SET time_zone = "+02:00";
 
 CREATE TABLE IF NOT EXISTS `tea_lists` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `key` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'A sharing key for this tea list (read&write)',
-  `creator_ip` binary(128) NOT NULL,
+  `share_key` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'A sharing key for this tea list (read&write)',
+  `cookie_key` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'A key used to identify this list in the cookies',
+  `creator_ip` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `key` (`key`)
+  UNIQUE KEY `share_key` (`share_key`),
+  UNIQUE KEY `cookie_key` (`cookie_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

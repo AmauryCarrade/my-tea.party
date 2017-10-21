@@ -54,7 +54,7 @@ body {
     }
 }
 
-@media(max-width: 769px) {
+@include mobile {
     .hero .hero-head header.nav {
         margin-top: 0;
 
@@ -75,8 +75,23 @@ body {
     }
 }
 
-@media only screen and(max-width: 1000px) and(min-width: 769px) {
+@include tablet-only {
     .box {
         border-radius: 0;
+    }
+}
+
+footer.footer {
+    a {
+        color: #ddd;
+
+        &:hover {
+            color: white;
+        }
+
+        sup {
+            font-variant: small-caps;
+            padding-left: .5em;
+        }
     }
 }

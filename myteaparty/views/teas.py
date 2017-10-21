@@ -4,13 +4,23 @@ from flask import request, render_template, redirect, url_for, abort
 from peewee import SQL, fn
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 
-from .model import Tea, TeaVendor, TeaType, TypeOfATea
-from .teaparty import app
+from .lists import is_tea_in_active_list, get_teas_in_active_list
+from ..model import Tea, TeaVendor, TeaType, TypeOfATea
+from ..teaparty import app
 
 
 @app.route('/')
 def homepage():
-    return render_template('index.html')
+    return render_template('index.html',
+        active_list_teas=get_teas_in_active_list(),
+        vendors=TeaVendor.select().order_by(TeaVendor.order)
+    )
+
+@app.route('/about')
+def about():
+    return render_template('about.html',
+        vendors=TeaVendor.select().order_by(TeaVendor.order)
+    )
 
 
 @app.route('/<tea_vendor>/<tea_slug>')
@@ -35,7 +45,12 @@ def tea(tea_vendor, tea_slug):
     if tea_tips_short:
         tea_tips_short += '.'
 
-    return render_template('tea.html', tea=tea, tea_tips_short=tea_tips_short, tea_types=tea_types)
+    return render_template('tea.html',
+        tea=tea,
+        tea_tips_short=tea_tips_short,
+        tea_types=tea_types,
+        is_in_list=is_tea_in_active_list(tea)
+    )
 
 
 def search_for_tea(search_query, paginate_by=0, page=1):

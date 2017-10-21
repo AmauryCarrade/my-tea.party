@@ -13,4 +13,5 @@ def _db_close(exc):
         database.close()
 
 from .commands import *  # noqa
-from .views import *  # noqa
+from .views.teas import *  # noqa
+from .views.lists import *  # noqa

@@ -45,6 +45,7 @@ ul.tea-tips-list {
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
+
     li {
         display: inline-block;
         list-style-type: none;
@@ -56,22 +57,20 @@ ul.tea-tips-list {
             padding-left: 0;
         }
         .icon {
-            position: relative;
-            top: 3px;
             margin-right: .2em;
         }
     }
 }
 
-@media(max-width: 769px) {
+@include mobile {
     #hero-list .tea-title {
         text-align: center;
     }
+
     #teas-list .card.tea-list-item {
-        //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
         border-radius: 0;
+
         .card-image figure img {
-            //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
             border-radius: 0;
         }
     }

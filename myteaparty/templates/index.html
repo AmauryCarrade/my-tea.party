@@ -1,8 +1,20 @@
 {% extends 'base.html' %}
 
+{% import 'macros/teas.html' as tea_utils %}
+{% import 'macros/promo.html' as promo %}
+
 
 {% block javascripts %}
 <script type="text/javascript" src="{{ url_for('static', filename='assets/js/time-counters.js') }}"></script>
+
+<script type="text/javascript">
+    var links = document.querySelectorAll(".card-buttons a");
+
+    for(var i = 0; i < links.length; i++)
+    {
+        links[i].title = '';
+    }
+</script>
 {% endblock %}
 
 
@@ -27,165 +39,64 @@
 
 
 {% block content %}
-<section id="favorite-teas" style="filter:blur(4px);">
+<section id="favorite-teas" class="section">
     <div class="container">
-        <div class="columns is-multiline">
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="content">
-                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
-                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
-                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
+        {% if active_list_teas %}
+            <div class="columns is-multiline">
+                {% for tea_item in active_list_teas %}
+                    {%- set tea = tea_item.tea -%}
+                    <div class="column is-one-third">
+                        <div class="card{% if tea_item.is_empty %} no-tea-left{% endif %}">
+                            <div class="card-content">
+                                <div class="content">
+                                    <div class="is-pulled-right card-buttons">
+                                        {# Soon
+                                        <a href="#"
+                                           class="card-reorder-handle is-hidden-mobile tooltip is-tooltip-left"
+                                           title="Réordonner"
+                                           aria-label="Réordonner"
+                                           data-tooltip="Réordonner">
+                                            <span class="fa fa-reorder"></span>
+                                        </a>
+                                        #}
+                                        <a href="{{ url_for('toggle_empty_tea_in_list', tea_id=tea.id, next=url_for('homepage')) }}"
+                                           class="tooltip is-tooltip-left"
+                                           title="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous"
+                                           aria-label="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous"
+                                           data-tooltip="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous">
+                                            <span class="fa fa-trash{% if not tea_item.is_empty %}-o{% endif %}"></span>
+                                        </a>
+                                        <a href="{{ url_for('remove_tea_from_list', tea_id=tea.id, next=url_for('homepage')) }}"
+                                           class="tooltip is-tooltip-left"
+                                           title="Supprimer le thé des favoris"
+                                           aria-label="Supprimer le thé des favoris"
+                                           data-tooltip="Supprimer le thé des favoris">
+                                            <span class="fa fa-close"></span>
+                                        </a>
+                                    </div>
+                                    <h3>
+                                        <a href="{{ url_for_tea(tea) }}">{{ tea.name }}</a>
+                                        {%- if tea_item.is_empty %}<span class="tag-empty">Épuisé</span>{% endif -%}
+                                    </h3>
+                                    <p>{{ tea.description }}</p>
+                                    <ul class="tea-tips-list">
+                                        {{ tea_utils.list_tea_tips(tea) }}
+                                    </ul>
+                                </div>
                             </div>
-                            <h3><a href="#">Thé des impressionnistes</a></h3>
-                            <p>Thé vert parfumé, goût fleuri &amp; vanillé</p>
-                            <ul>
-                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
-                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
-                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
-                            </ul>
+                            <footer class="card-footer">
+                                <a class="card-footer-item button-progress" data-time="{{ tea.tips_duration }}" data-name="{{ tea.name }}">
+                                    <span class="button-progress-label">Lancer l'infusion</span>
+                                    <span class="button-progress-bar"></span>
+                                </a>
+                            </footer>
                         </div>
                     </div>
-                    <footer class="card-footer">
-                        <a class="card-footer-item button-progress" data-time="180" data-name="Thé des impressionnistes">
-                            <span class="button-progress-label">Lancer l'infusion</span>
-                            <span class="button-progress-bar"></span>
-                        </a>
-                    </footer>
-                </div>
+                {% endfor %}
             </div>
-
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="content">
-                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
-                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
-                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
-                            </div>
-                            <h3><a href="#">Iskandar</a></h3>
-                            <p>Thé vert aux notes veloutées de violette</p>
-                            <ul>
-                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
-                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
-                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a class="card-footer-item button-progress" data-time="180" data-name="Iskandar">
-                            <span class="button-progress-label">Lancer l'infusion</span>
-                            <span class="button-progress-bar"></span>
-                        </a>
-                    </footer>
-                </div>
-            </div>
-
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="content">
-                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
-                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
-                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
-                            </div>
-                            <h3><a href="#">Thé à l'Opéra</a></h3>
-                            <p>Thé vert au goût de vanille &amp; de fruits rouges</p>
-                            <ul>
-                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
-                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
-                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a class="card-footer-item button-progress" data-time="180" data-name="Thé à l'Opéra">
-                            <span class="button-progress-label">Lancer l'infusion</span>
-                            <span class="button-progress-bar"></span>
-                        </a>
-                    </footer>
-                </div>
-            </div>
-
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="content">
-                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
-                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
-                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
-                            </div>
-                            <h3><a href="#">Thé sur le Nil</a></h3>
-                            <p>Thé vert au parfum fruité &amp; citronné</p>
-                            <ul>
-                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
-                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
-                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a class="card-footer-item button-progress" data-time="180" data-name="Thé sur le Nil">
-                            <span class="button-progress-label">Lancer l'infusion</span>
-                            <span class="button-progress-bar"></span>
-                        </a>
-                    </footer>
-                </div>
-            </div>
-
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="content">
-                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
-                                <a href="#" title="Marquer ce thé comme épuisé chez vous" aria-label="Marquer ce thé comme épuisé chez vous"><span class="fa fa-trash-o"></span></a>
-                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
-                            </div>
-                            <h3><a href="#">Noël Bleu</a></h3>
-                            <p>Thé Bleu écorces d'orange, vanille &amp; cannelle</p>
-                            <ul>
-                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 3 g pour 20 cl.</li>
-                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
-                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 3 min.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a class="card-footer-item button-progress" data-time="180" data-name="Noël Bleu">
-                            <span class="button-progress-label">Lancer l'infusion</span>
-                            <span class="button-progress-bar"></span>
-                        </a>
-                    </footer>
-                </div>
-            </div>
-
-            <div class="column is-one-third">
-                <div class="card no-tea-left">
-                    <div class="card-content">
-                        <div class="content">
-                            <div class="is-pulled-right card-buttons" title="Supprimer le thé des favoris">
-                                <a href="#" title="Ce thé n'est plus épuisé" aria-label="Ce thé n'est plus épuisé"><span class="fa fa-trash"></span></a>
-                                <a href="#" title="Supprimer le thé des favoris" aria-label="Supprimer le thé des favoris"><span class="fa fa-close"></span></a>
-                            </div>
-                            <h3><a href="#">Chandernagor</a><span class="tag is-dark">Épuisé</span></h3>
-                            <p>CHAÏ - Thé noir aux épices impériales</p>
-                            <ul>
-                                <li title="Quantité de thé"><span class="icon is-small"><span class="fa fa-coffee" aria-hidden="true"></span></span> 2,5 g pour 20 cl.</li>
-                                <li title="Température d'infusion"><span class="icon is-small"><span class="fa fa-thermometer-three-quarters" aria-hidden="true"></span></span> 95 °C</li>
-                                <li title="Durée d'infusion"><span class="icon is-small"><span class="fa fa-clock-o" aria-hidden="true"></span></span> 5 min.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a class="card-footer-item button-progress" data-time="300" data-name="Chandernagor">
-                            <span class="button-progress-label">Lancer l'infusion</span>
-                            <span class="button-progress-bar"></span>
-                        </a>
-                    </footer>
-                </div>
-            </div>
-        </div>
+        {% else %}
+            {{ promo.mtp_promo(vendors) }}
+        {% endif %}
     </div>
 </section>
 {% endblock %}

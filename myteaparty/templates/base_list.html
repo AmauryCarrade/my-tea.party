@@ -13,7 +13,7 @@
 
                 <div class="column is-half">
                     <div class="card tea-list-item">
-                        <a href="{{ url_for('tea', tea_vendor=(tea.vendor_slug if tea.vendor_slug else (tea.vendor.slug if tea.vendor else '')), tea_slug=tea.slug) }}">
+                        <a href="{{ url_for_tea(tea) }}">
                             <div class="card-image media-left media is-pulled-left">
                                 <figure class="image">
                                     <img src="{{ external(tea.illustration, 'small') }}" alt="{{ tea.name }}" class="has-hires" />

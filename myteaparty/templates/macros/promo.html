@@ -1,0 +1,75 @@
+{% macro mtp_promo(vendors, long_about=False) -%}
+    <div class="tile is-ancestor mtp-promo">
+        <div class="tile is-6 is-vertical is-parent">
+            <div class="tile is-child box">
+                <h3 class="title">My <em>Tea Party</em>?</h3>
+                <p>
+                    <strong>Bienvenue&nbsp;!</strong> <em>My Tea Party</em> est un service vous permettant d'accéder facilement aux <strong>informations utiles sur les thés que vous aimez boire</strong>. Mettez un terme à la recherche des temps d'infusion sur les sites divers et compliqués des fabriquants&nbsp;! Tout est rassemblé ici-même.
+                </p>
+                <p>
+                    Pour commencer, tapez le nom de votre thé dans la barre de recherche ci-dessus…
+                </p>
+            </div>
+            <div class="tile is-child box">
+                <h3 class="title">Ils sont dans la boîte</h3>
+                <p>
+                    Nous ajoutons progressivement de nouveaux fournisseurs au site, afin que vous puissiez tout rassembler sous une même bannière. Actuellement, les fabriquants suivants sont disponible&nbsp;:
+                </p>
+                <div class="columns is-multiline">
+                    {% for vendor in vendors %}
+                        <div class="column">
+                            <a href="{{ url_for('by_vendor', vendor_slug=vendor.slug) }}">
+                                {{ vendor.name }}
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="tile is-parent">
+            <div class="tile is-child box">
+                <h3 class="title">Listez-les tous !</h3>
+                <p>
+                    <em>My Tea Party</em> ne se contente pas de vous présenter facilement vos thés via une courte recherche.
+                </p>
+                <p>
+                    Dés lors que vous avez trouvé votre thé, utilisez la petite étoile <span class="fa fa-star-o"></span> pour le mettre de côté. Les thés ainsi marqués seront affichés sur la page d'accueil, à la place de cette présentation.
+                </p>
+                <p>
+                    Pas besoin de compte&nbsp;! Le système vous reconnaît automatiquement. Et si vous voulez après coup utiliser la même liste sur plusieurs appareils, un lien en bas de page vous le permet simplement <span class="is-size-6">(fonctionnalité à venir)</span>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% if long_about %}
+    <div class="tile is-ancestor mtp-promo">
+        <div class="tile is-parent is-7">
+            <div class="tile is-child box">
+                <h3 class="title">Qui est derrière ceci&nbsp;?</h3>
+                <p>
+                    Je suis <a href="https://amaury.carrade.eu">Amaury Carrade</a>, étudiant médiateur, buveur de thé et développeur sur mon temps libre. D'ailleurs, le libre, j'aime bien ça, ce pourquoi <a href="https://github.com/AmauryCarrade/my-tea.party">le code-source de ce site est public</a>. N'hésitez pas à aller voir si vous êtes curieux, ou si vous voulez participer.
+                </p>
+                <p>
+                    Un bug ? Une suggestion ? <a href="https://github.com/AmauryCarrade/my-tea.party/issues">Ça se passe par là</a> :) .
+                </p>
+            </div>
+        </div>
+        <div class="tile is-parent is-5">
+            <div class="tile is-child box">
+                <h3 class="title">Les trucs légaux</h3>
+                <p>
+                    Ce site est édité par <a href="https://amaury.carrade.eu">Amaury Carrade</a>.<br />
+                    Les contenus affichés sur ce site appartiennent à leurs auteurs respectifs, systématiquement indiqués clairement dans le corps de la page.
+                </p>
+                <p>
+                    Ce site est hébergé par la société <a href="https://www.online.net/fr">Online SAS</a>, BP 438 - 75366 Paris CEDEX 08 (RCS Paris B 433 115 904).
+                </p>
+                <p>
+                    Vous pouvez contacter l'auteur <a href="https://amaury.carrade.eu/contact">sur cette page</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{%- endmacro %}

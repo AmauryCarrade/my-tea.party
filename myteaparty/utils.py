@@ -3,7 +3,7 @@ import os
 import requests
 import shutil
 
-from flask import request, url_for
+from flask import request, url_for, g
 from path import Path
 from PIL import Image
 from werkzeug import url_encode
@@ -108,3 +108,29 @@ def update_query(**new_values):
 def external(file_name, file_format=None, absolute=False):
     file_name = get_external_filename(file_name, file_format)
     return url_for('static', filename=f'{app.config["STATIC_FILES_FOLDER"]}/{file_name[0:2]}/{file_name}', _external=absolute)
+
+@app.template_global()
+def url_for_tea(tea, **kwargs):
+    return url_for(
+        'tea',
+        tea_vendor=(tea.vendor_slug if hasattr(tea, 'vendor_slug') and tea.vendor_slug else (tea.vendor.slug if tea.vendor else '')),
+        tea_slug=tea.slug,
+        **kwargs
+    )
+
+
+def after_request(f):
+    '''
+    Decorator to apply to a function to be executed
+    when the response is sent
+    '''
+    if not hasattr(g, 'after_request_callbacks'):
+        g.after_request_callbacks = []
+    g.after_request_callbacks.append(f)
+    return f
+
+@app.after_request
+def call_after_request_callbacks(response):
+    for callback in getattr(g, 'after_request_callbacks', ()):
+        callback(response)
+    return response

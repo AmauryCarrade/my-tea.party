@@ -31,6 +31,17 @@ STATIC_FILES_FORMATS = {
 }
 
 
+# Lists
+
+LISTS_DEFAULT_NAME = 'Liste par défaut'
+
+
+# Cookies
+
+COOKIE_LISTS = 'mtp_tea_lists'
+COOKIE_ACTIVE_LIST = 'mtp_tea_active_list'
+
+
 # A random secret key
 
 SECRET_KEY = 'some random string here'

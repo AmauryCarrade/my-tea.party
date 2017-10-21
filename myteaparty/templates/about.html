@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% import 'macros/promo.html' as promo %}
+
+{% block hero_classes %}is-medium{% endblock %}
+
+{% block hero_body %}
+<div class="hero-body">
+    <div class="container has-text-centered main-search-input-column">
+        <form class="main-tea-search" action="{{ url_for('search') }}">
+            <div class="control main-search-input-container">
+                <label class="sr-only" for="search_tea">Rechercher le nom d'un thé...</label>
+                <input type="search" class="big-search-input" id="search_tea" name="q" placeholder="Rechercher le nom d'un thé..." />
+                <button type="submit">
+                    <span class="fa fa-search"></span>
+                    <span class="sr-only">Rechercher</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        {{ promo.mtp_promo(vendors, True) }}
+    </div>
+</section>
+{% endblock %}
