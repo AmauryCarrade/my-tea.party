@@ -48,9 +48,14 @@
 @include mobile {
 	#sync-list {
 		.box p {
-			&.sync_url {
+			&.sync-url {
 				margin: 3em .1em;
 				font-size: 1.6em;
+
+				.fa {
+					display: block;
+				}
+
 			}
 		}
 	}
