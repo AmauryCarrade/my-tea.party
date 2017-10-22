@@ -29,11 +29,60 @@
 
 
 {% block content %}
-<section class="section" id="sync_list">
+<section class="section" id="sync-list">
     <div class="container">
         <div class="box">
             <p>Pour synchroniser votre liste avec un autre appareil, ouvrez l'adresse suivante sur ce dernier. C'est tout !</p>
-            <p class="sync_url">{{ url_for('sync_list_newdevice', share_key=active_list.share_key, _external=True) }}</p>
+            <p class="sync-url tooltip is-tooltip-top" id="sync-url-handle" data-tooltip="Copier le lien">
+                <span id="sync-url">{{ url_for('sync_list_newdevice', share_key=active_list.share_key, _external=True) }}</span>
+                <span class="fa fa-clipboard"></span>
+            </p>
+            <p class="sync-url-copy-message" id="sync-url-copy-message">
+                &nbsp;
+            </p>
+
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    var handle = document.getElementById('sync-url-handle');
+                    var sync_url = document.getElementById('sync-url');
+                    var copy_message = document.getElementById('sync-url-copy-message');
+
+                    handle.addEventListener('click', function (element)
+                    {
+                        var copyBuffer = document.body.appendChild(document.createElement('textarea'));
+                        var element = element.target;
+                        copyBuffer.className = 'copy-buffer';
+                        copyBuffer.value = sync_url.textContent;
+                        copyBuffer.select();
+
+                        try
+                        {
+                            if (!document.execCommand('copy'))
+                            {
+                                console.error('Copy failed.');
+                                copy_message.innerHTML = 'Erreur lors de la copie';
+                            }
+                            else
+                            {
+                                copy_message.innerHTML = 'Lien copié !';
+                            }
+                        }
+                        catch(e)
+                        {
+                            console.error('Error while executing copy command: %o', e);
+                            element.setAttribute('data-tooltip', 'Erreur lors de la copie');
+                        }
+
+                        if (copy_message.timeoutId) clearTimeout(copy_message.timeoutId);
+                        copy_message.timeoutId = setTimeout(function () {
+                            copy_message.innerHTML = '&nbsp;';
+                        }, 2000);
+
+                        document.body.removeChild(copyBuffer);
+                    });
+                })();
+            </script>
 
             <p>
                 Ce lien expire le {{ active_list.share_key_valid_until.strftime('%d/%m/%Y à %H:%M') }}. <a href="{{ url_for('sync_list', regen=True) }}">Regénérer</a>.
