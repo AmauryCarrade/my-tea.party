@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block hero_attributes %}id="hero-list"{% endblock %}
+
+{% block social_tags %}
+    {% if done %}
+        <meta http-equiv="refresh" content="6; url={{ url_for('homepage', _external=True) }}" />
+    {% endif %}
+{% endblock %}
+
+
+{% block hero_body %}
+<div class="hero-body">
+    <div class="container">
+        <div class="columns is-vcentered">
+            <div class="column tea-title">
+                <h1 class="title">Ajouter une liste à cet appareil</h1>
+                <h2 class="subtitle">{{ new_list.name }}</h2>
+            </div>
+            <div class="column is-narrow is-5 is-hidden-mobile main-search-input-column">
+                <form class="main-tea-search" action="{{ url_for('search') }}">
+                    <div class="control main-search-input-container">
+                        <label class="sr-only" for="search_tea">Rechercher le nom ou le numéro d'un thé...</label>
+                        <input type="search" class="big-search-input" id="search_tea" name="q" placeholder="Rechercher..." />
+                        <button type="submit">
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<section class="section" id="sync_list">
+    <div class="container">
+        <div class="box">
+            {% if done %}
+                <aside class="message is-success">
+                    <div class="message-body">
+                        La liste a bien été ajoutée à votre compte.
+                    </div>
+                </aside>
+            {% elif already_registered %}
+                <aside class="message is-warning">
+                    <div class="message-body">
+                        Cette liste est déjà enregistrée sur cet appareil.
+                        {%- if not already_registered_and_active %}
+                            Pour l'utiliser, sélectionnez-là dans le menu «&nbsp;Mes listes&nbsp;» en bas de page.
+                        {%- endif -%}
+                    </div>
+                </aside>
+            {% else %}
+                <p>Vous êtes sur le point d'ajouter la liste suivante à votre appareil.</p>
+
+                <div class="columns">
+                    <div class="column is-half is-offset-one-quarter">
+                        <article class="panel">
+                            <p class="panel-heading">
+                                {{ new_list.name }}
+                            </p>
+                            <div class="panel-block">
+                                Une liste créée le {{ new_list.created_at.strftime('%d/%m/%Y à %H:%M') }}.<br />
+                                Voici un aperçu des thés qu'elle contient…
+                            </div>
+                            {% for tea in tea_sample %}
+                                <a class="panel-block is-active" href="{{ url_for_tea(tea.tea) }}">
+                                    <span class="panel-icon">
+                                        <i class="fa fa-coffee"></i>
+                                    </span>
+                                    {{ tea.tea.name }}
+                                </a>
+                                {% endfor %}
+                            <div class="panel-block other-teas">
+                                {% set remaining_teas = teas_count - tea_sample|length %}
+                                {% set s = 's' if remaining_teas > 1 else '' %}
+                                …et {{ remaining_teas }} autre{{ s }} thé{{ s }}.
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-3 is-offset-one-quarter">
+                        <a href="{{ url_for('sync_list_newdevice', share_key=new_list.share_key, confirm=True) }}" class="button is-fullwidth is-primary is-medium">Ajouter la liste</a>
+                    </div>
+                    <div class="column is-3">
+                        <a href="{{ url_for('homepage') }}" class="button is-fullwidth is-medium">Annuler</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

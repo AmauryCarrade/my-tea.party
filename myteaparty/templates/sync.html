@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block hero_attributes %}id="hero-list"{% endblock %}
+
+
+{% block hero_body %}
+<div class="hero-body">
+    <div class="container">
+        <div class="columns is-vcentered">
+            <div class="column tea-title">
+                <h1 class="title">Synchroniser sur un autre appareil</h1>
+                <h2 class="subtitle">{{ active_list.name }}</h2>
+            </div>
+            <div class="column is-narrow is-5 is-hidden-mobile main-search-input-column">
+                <form class="main-tea-search" action="{{ url_for('search') }}">
+                    <div class="control main-search-input-container">
+                        <label class="sr-only" for="search_tea">Rechercher le nom ou le numéro d'un thé...</label>
+                        <input type="search" class="big-search-input" id="search_tea" name="q" placeholder="Rechercher..." />
+                        <button type="submit">
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<section class="section" id="sync_list">
+    <div class="container">
+        <div class="box">
+            <p>Pour synchroniser votre liste avec un autre appareil, ouvrez l'adresse suivante sur ce dernier. C'est tout !</p>
+            <p class="sync_url">{{ url_for('sync_list_newdevice', share_key=active_list.share_key, _external=True) }}</p>
+
+            <p>
+                Ce lien expire le {{ active_list.share_key_valid_until.strftime('%d/%m/%Y à %H:%M') }}. <a href="{{ url_for('sync_list', regen=True) }}">Regénérer</a>.
+            </p>
+
+            <aside class="message is-danger">
+                <div class="message-body">
+                    <strong>Attention !</strong> Toute personne ayant ce lien dispose d'un accès en <strong>lecture et écriture</strong> à votre liste. Ne le partagez qu'avec vous-même ou vos proches.
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

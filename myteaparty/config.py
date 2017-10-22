@@ -34,6 +34,7 @@ STATIC_FILES_FORMATS = {
 # Lists
 
 LISTS_DEFAULT_NAME = 'Liste par défaut'
+SHARE_KEY_EXPIRES_AFTER = 1  # In hours
 
 
 # Cookies
