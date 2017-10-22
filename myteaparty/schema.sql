@@ -15,9 +15,12 @@ SET time_zone = "+02:00";
 
 CREATE TABLE IF NOT EXISTS `tea_lists` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `share_key` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'A sharing key for this tea list (read&write)',
+  `name` carchar(256) CHARACTER SET utf8 NOT NULL COMMENT 'A name for the list',
+  `share_key` varchar(100) CHARACTER SET utf8 DEFAULT NULL COMMENT 'A sharing key for this tea list (read&write)',
   `cookie_key` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'A key used to identify this list in the cookies',
-  `creator_ip` varchar(64) NOT NULL,
+  `creator_ip` varchar(64) NOT NULL COMMENT 'The list creator\'s IP address',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'The list\'s creation date',
+  `share_key_valid_until` timestamp DEFAULT NULL COMMENT 'The expiration date of the share key used to enable sync between devices',
   PRIMARY KEY (`id`),
   UNIQUE KEY `share_key` (`share_key`),
   UNIQUE KEY `cookie_key` (`cookie_key`)

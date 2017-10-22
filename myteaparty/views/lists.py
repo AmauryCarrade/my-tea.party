@@ -20,7 +20,6 @@ def create_tea_list(name=None):
 	return TeaList.create(
 		name=name or app.config['LISTS_DEFAULT_NAME'],
 		cookie_key=str(uuid.uuid4().hex).upper().replace('-', ''),
-		share_key=None,
 		creator_ip=request.remote_addr
 	)
 

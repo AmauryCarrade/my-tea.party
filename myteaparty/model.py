@@ -85,7 +85,7 @@ class TypeOfATea(BaseModel):
 class TeaList(BaseModel):
     name = CharField()
     created_at = DateTimeField(default=datetime.datetime.now)
-    share_key = CharField(unique=True, null=True)
+    share_key = CharField(unique=True, null=True, default=None)
     cookie_key = CharField(unique=True)
     creator_ip = CharField()
     share_key_valid_until = DateTimeField(null=True)
