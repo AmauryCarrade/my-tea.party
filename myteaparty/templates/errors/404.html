@@ -1,0 +1,15 @@
+{% extends 'errors/error.html' %}
+
+{% block error_icon %}
+    <span class="fa-stack fa-lg">
+        <i class="fa fa-map-o fa-stack-2x"></i>
+        <i class="fa fa-question fa-stack-1x subicon-404"></i>
+    </span>
+{% endblock %}
+
+{% block error_title %}Cette page n'existe pas.{% endblock %}
+
+{% block error_description %}
+	<p>Vous avez probablement fait une faute de frappe, ou suivi un lien mort.</p>
+	<p>Vous pouvez <a href="{{ url_for('homepage') }}">retourner à l'accueil</a> pour revenir dans le droit chemin.</p>
+{% endblock %}

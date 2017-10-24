@@ -6,7 +6,7 @@
         <form class="main-tea-search" action="{{ url_for('search') }}">
             <div class="control main-search-input-container">
                 <label class="sr-only" for="search_tea">Rechercher le nom d'un thé...</label>
-                <input type="search" class="big-search-input" id="search_tea" name="q" value="{{ search_query }}" placeholder="Rechercher le nom d'un thé..." />
+                <input type="search" class="big-search-input" id="search_tea" name="q" value="{{ search_query if search_query else '' }}" placeholder="Rechercher le nom d'un thé..." />
                 <button type="submit">
                     <span class="fa fa-search"></span>
                     <span class="sr-only">Rechercher</span>
@@ -15,4 +15,31 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block list_empty %}
+    <section class="error-page columns">
+        <aside class="column is-1 is-offset-2">
+            <span class="icon is-large">
+                <span class="fa-stack fa-lg">
+                    <i class="fa fa-search fa-stack-2x"></i>
+                    <i class="fa fa-question fa-stack-1x subicon-search"></i>
+                </span>
+            </span>
+        </aside>
+        <article class="column is-6">
+            {% if search_query %}
+                <h3>Aucun thé ne correspond</h3>
+                <p>
+                    On a fouillé partout, mais aucun thé ne colle avec «&nbsp;{{ search_query }}&nbsp;». Désolé&nbsp;!<br />
+                    Tentez de chercher autre chose ?
+                </p>
+            {% else %}
+                <h3>Allez-y, cherchez quelque chose !</h3>
+                <p>
+                    Entrez quelques mots dans le champ ci-dessus — les résultats apparaîtront ici.
+                </p>
+            {% endif %}
+        </article>
+    </section>
 {% endblock %}

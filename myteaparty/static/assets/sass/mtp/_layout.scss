@@ -95,3 +95,81 @@ footer.footer {
         }
     }
 }
+
+
+.error-page {
+    color: white;
+    margin: 4em 0 !important;
+
+    aside {
+        font-size: 2em;
+
+        .icon {
+            position: relative;
+            top: 1em;
+
+            .fa-stack.fa-lg .fa-question {
+                position: relative;
+
+                &.subicon-search {
+                    left: 8px;
+                    bottom: 2px;
+                }
+
+                &.subicon-404 {
+                    left: .55em;
+                }
+            }
+        }
+    }
+
+    article {
+        h3 {
+            font-size: 2.2em;
+        }
+        p {
+            font-size: 1.4em;
+
+            a {
+                color: lighten($primary, 40%);
+
+                &:hover {
+                    color: lighten($primary, 70%);
+                }
+            }
+        }
+    }
+}
+
+@include mobile {
+    .error-page {
+        text-align: center;
+
+        aside .fa-stack {
+            left: -.5em;
+            top: -1em;
+        }
+
+        article h3 {
+            margin: 1em .2em;
+        }
+    }
+}
+
+@include tablet-only {
+    .error-page {
+        aside {
+            position: relative;
+            left: -3em;
+        }
+    }
+}
+
+@include desktop-only {
+    .error-page {
+        aside {
+            position: relative;
+            left: -2em;
+        }
+    }
+}

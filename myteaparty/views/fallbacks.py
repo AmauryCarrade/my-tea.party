@@ -1,4 +1,4 @@
-from flask import redirect, url_for, abort
+from flask import redirect, url_for, abort, render_template
 
 from .search import search_for_tea
 from ..teaparty import app
@@ -15,3 +15,8 @@ def search_generic_fallback(search_fallback):
         return redirect(url_for('tea', tea_slug=tea['slug'], tea_vendor=tea['vendor_slug']), 302)
     else:
         abort(404)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/404.html'), 404

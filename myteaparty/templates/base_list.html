@@ -8,34 +8,35 @@
 <section id="teas-list">
     <div class="container">
         {% if teas %}
-        <div class="columns is-multiline">
-            {% for tea in (teas.dicts() if teas.dicts else (teas.get_object_list() if teas.get_object_list else teas)) %}
+            <div class="columns is-multiline">
+                {% for tea in (teas.dicts() if teas.dicts else (teas.get_object_list() if teas.get_object_list else teas)) %}
 
-                <div class="column is-half">
-                    <div class="card tea-list-item">
-                        <a href="{{ url_for_tea(tea) }}">
-                            <div class="card-image media-left media is-pulled-left">
-                                <figure class="image">
-                                    <img src="{{ external(tea.illustration, 'small') }}" alt="{{ tea.name }}" class="has-hires" />
-                                </figure>
-                            </div>
-                            <div class="card-content">
-                                <div class="content">
-                                    <h3>{{ tea.name }}</h3>
-                                    <p>{{ tea.description }}</p>
-                                    <ul class="tea-tips-list">
-                                        {{ tea_utils.list_tea_tips(tea) }}
-                                    </ul>
+                    <div class="column is-half">
+                        <div class="card tea-list-item">
+                            <a href="{{ url_for_tea(tea) }}">
+                                <div class="card-image media-left media is-pulled-left">
+                                    <figure class="image">
+                                        <img src="{{ external(tea.illustration, 'small') }}" alt="{{ tea.name }}" class="has-hires" />
+                                    </figure>
                                 </div>
-                            </div>
-                            <div class="is-clearfix"></div>
-                        </a>
+                                <div class="card-content">
+                                    <div class="content">
+                                        <h3>{{ tea.name }}</h3>
+                                        <p>{{ tea.description }}</p>
+                                        <ul class="tea-tips-list">
+                                            {{ tea_utils.list_tea_tips(tea) }}
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="is-clearfix"></div>
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-            {% endfor %}
-
-        </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% block list_empty %}{% endblock %}
         {% endif %}
 
 

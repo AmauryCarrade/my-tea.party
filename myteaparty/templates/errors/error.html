@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block hero_body %}
+    <div class="hero-body"></div>
+{% endblock %}
+
+
+{% block content %}
+<section id="teas-list">
+    <div class="container">
+        <section class="error-page columns">
+            <aside class="column is-1 is-offset-2">
+                <span class="icon is-large">
+                    {% block error_icon %}{% endblock %}
+                </span>
+            </aside>
+            <article class="column is-6">
+                <h3>{% block error_title %}Une erreur est survenue.{% endblock %}</h3>
+                {% block error_description %}{% endblock %}
+            </article>
+        </section>
+    </div>
+</section>
+{% endblock %}

@@ -6,3 +6,6 @@ watch:
 
 run:
 	FLASK_APP=myteaparty/__init__.py FLASK_DEBUG=1 flask run
+
+flask:
+	FLASK_APP=myteaparty/__init__.py flask
