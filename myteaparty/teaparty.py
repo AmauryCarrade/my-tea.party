@@ -15,5 +15,9 @@ def _db_close(exc):
 
 
 from .commands import *  # noqa
+
+from .views.pages import *  # noqa
+from .views.search import *  # noqa
 from .views.teas import *  # noqa
 from .views.lists import *  # noqa
+from .views.fallbacks import *  # noqa

@@ -258,18 +258,21 @@ def sync_list_newdevice(share_key):
         return render_template('sync_newdevice.html', new_list=new_list, done=True)
 
     elif is_list_registered_for_user(new_list):
-        return render_template('sync_newdevice.html',
-                               new_list=new_list,
-                               done=False,
-                               already_registered=True,
-                               already_registered_and_active=get_tea_list_from_request().id == new_list.id)
+        return render_template(
+            'sync_newdevice.html',
+            new_list=new_list,
+            done=False,
+            already_registered=True,
+            already_registered_and_active=get_tea_list_from_request().id == new_list.id
+        )
 
     new_list_teas_sample, new_list_teas_count = get_teas_in_list(new_list, limit=5)
 
-    return render_template('sync_newdevice.html',
-       new_list=new_list,
-       tea_sample=new_list_teas_sample,
-       teas_count=new_list_teas_count,
-       done=False,
-       already_registered=False
+    return render_template(
+        'sync_newdevice.html',
+        new_list=new_list,
+        tea_sample=new_list_teas_sample,
+        teas_count=new_list_teas_count,
+        done=False,
+        already_registered=False
     )
