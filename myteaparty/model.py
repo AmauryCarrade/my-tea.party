@@ -111,6 +111,7 @@ def init_db():
     """
     database.create_tables([TeaVendor, TeaType, Tea, TypeOfATea, TeaList, TeaListItem])
 
+
 def get_or_create(Model, **kwargs):
     '''
     A get_or_create method exactly like the peewee's one, but compatible with

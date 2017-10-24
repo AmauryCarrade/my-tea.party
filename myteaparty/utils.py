@@ -37,6 +37,7 @@ def save_distant_file(url):
 
     return file_name
 
+
 def generate_thumbnails(file_path):
     '''
     Generates thumbnails for the given filename
@@ -46,8 +47,8 @@ def generate_thumbnails(file_path):
 
         for thumb_name, thumb_format in app.config['STATIC_FILES_FORMATS'].items():
             x, y = thumb_format
-            if x is None: x = infinity
-            if y is None: y = infinity
+            x = x if x is not None else infinity
+            y = y if y is not None else infinity
 
             thumb_path = get_external_filename(file_path, thumb_name)
 
@@ -55,18 +56,19 @@ def generate_thumbnails(file_path):
                 image = Image.open(file_path)
                 image.thumbnail((x, y))
                 image.save(thumb_path)
-            except:
+            except IOError:
                 shutil.copy(file_path, thumb_path)
 
-            x, y = 2*x, 2*y
+            x, y = 2 * x, 2 * y
             thumb_path = get_external_filename(file_path, thumb_name + '@2x')
 
             try:
                 image = Image.open(file_path)
                 image.thumbnail((x, y))
                 image.save(thumb_path)
-            except:
+            except IOError:
                 shutil.copy(file_path, thumb_path)
+
 
 def get_external_filename(file_name, file_format=None):
     '''
@@ -78,6 +80,7 @@ def get_external_filename(file_name, file_format=None):
         file_name = f'{name}-{file_format}{ext}'
 
     return file_name
+
 
 def is_post_processed_file(file_name):
     '''
@@ -104,10 +107,14 @@ def update_query(**new_values):
 
     return '{}?{}'.format(request.path, url_encode(args))
 
+
 @app.template_global()
 def external(file_name, file_format=None, absolute=False):
     file_name = get_external_filename(file_name, file_format)
-    return url_for('static', filename=f'{app.config["STATIC_FILES_FOLDER"]}/{file_name[0:2]}/{file_name}', _external=absolute)
+    return url_for('static',
+                   filename=f'{app.config["STATIC_FILES_FOLDER"]}/{file_name[0:2]}/{file_name}',
+                   _external=absolute)
+
 
 @app.template_global()
 def url_for_tea(tea, **kwargs):
@@ -144,6 +151,7 @@ def after_request(f):
         g.after_request_callbacks = []
     g.after_request_callbacks.append(f)
     return f
+
 
 @app.after_request
 def call_after_request_callbacks(response):

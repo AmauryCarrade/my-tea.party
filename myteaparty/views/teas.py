@@ -12,15 +12,13 @@ from ..teaparty import app
 @app.route('/')
 def homepage():
     return render_template('index.html',
-        active_list_teas=get_teas_in_active_list(),
-        vendors=TeaVendor.select().order_by(TeaVendor.order)
-    )
+                           active_list_teas=get_teas_in_active_list(),
+                           vendors=TeaVendor.select().order_by(TeaVendor.order))
+
 
 @app.route('/about')
 def about():
-    return render_template('about.html',
-        vendors=TeaVendor.select().order_by(TeaVendor.order)
-    )
+    return render_template('about.html', vendors=TeaVendor.select().order_by(TeaVendor.order))
 
 
 @app.route('/<tea_vendor>/<tea_slug>')
@@ -35,22 +33,25 @@ def tea(tea_vendor, tea_slug):
 
     tea_tips_short = ''
     if tea.tips_mass:
-        tea_tips_short += (str(tea.tips_mass / 1000).replace('.', ',') + 'g') if tea.tips_mass > 0 else str(-int(tea.tips_mass)) + ' sachets'
+        if tea.tips_mass > 0:
+            tea_tips_short += (str(tea.tips_mass / 1000).replace('.', ',') + 'g')
+        else:
+            tea_tips_short += str(-int(tea.tips_mass)) + ' sachets'
     if tea.tips_volume:
         tea_tips_short += f'{" dans " if tea.tips_mass else ""}{tea.tips_volume} cL'
     if tea.tips_temperature:
         tea_tips_short += f'{" d&rsquo;eau à " if tea_tips_short else ""}{tea.tips_temperature}°C'
     if tea.tips_duration:
-        tea_tips_short += f'{", pendant " if tea_tips_short else ""}{tea.tips_duration // 60} minute{"s" if tea.tips_duration >= 120 else ""}'
+        tea_tips_short += (f'{", pendant " if tea_tips_short else ""}{tea.tips_duration // 60}'
+                           f' minute{"s" if tea.tips_duration >= 120 else ""}')
     if tea_tips_short:
         tea_tips_short += '.'
 
     return render_template('tea.html',
-        tea=tea,
-        tea_tips_short=tea_tips_short,
-        tea_types=tea_types,
-        is_in_list=is_tea_in_active_list(tea)
-    )
+                           tea=tea,
+                           tea_tips_short=tea_tips_short,
+                           tea_types=tea_types,
+                           is_in_list=is_tea_in_active_list(tea))
 
 
 def search_for_tea(search_query, paginate_by=0, page=1):
@@ -108,6 +109,7 @@ def search_for_tea(search_query, paginate_by=0, page=1):
 
     return teas if paginate_by <= 0 else (teas, count, pages_count)
 
+
 @app.route('/search')
 def search():
     search_query = request.args.get('q')
@@ -148,12 +150,14 @@ def by_type(tea_type_slug):
         'pages': teas.get_page_count()
     })
 
+
 @app.route('/vendor', defaults={'vendor_slug': None})
 @app.route('/vendors', defaults={'vendor_slug': None})
 @app.route('/vendor/<vendor_slug>')
 def by_vendor(vendor_slug):
     if vendor_slug is None:
-        return redirect(url_for('by_vendor', vendor_slug=TeaVendor.select(TeaVendor.slug).order_by(TeaVendor.order).first().slug))
+        return redirect(url_for('by_vendor',
+                                vendor_slug=TeaVendor.select(TeaVendor.slug).order_by(TeaVendor.order).first().slug))
 
     vendor = get_object_or_404(TeaVendor, TeaVendor.slug == vendor_slug)
     vendors = TeaVendor.select().order_by(TeaVendor.order)
@@ -171,9 +175,10 @@ def by_vendor(vendor_slug):
         'pages': teas.get_page_count()
     })
 
+
 @app.route('/teas')
 def all_teas():
-    types = TeaType.select().where(TeaType.is_origin == False).order_by(TeaType.order)
+    types = TeaType.select().where(TeaType.is_origin == False).order_by(TeaType.order)  # noqa
     teas = PaginatedQuery(
             (Tea.select(Tea, TeaVendor).join(TeaVendor)),
             paginate_by=app.config['ITEMS_PER_PAGE'],

@@ -4,10 +4,8 @@ import importlib
 import os
 import pkgutil
 import requests
-import re
 import titlecase
 
-from bs4 import BeautifulSoup, UnicodeDammit
 from itertools import cycle, islice, groupby
 from path import Path
 from slugify import slugify
@@ -15,7 +13,7 @@ from slugify import slugify
 from .teaparty import app
 from .model import Tea, TeaType, TypeOfATea, TeaVendor, database
 from .model import get_or_create as get_or_create_model
-from .utils import save_distant_file, generate_thumbnails, get_external_filename, is_post_processed_file
+from .utils import generate_thumbnails, get_external_filename, is_post_processed_file
 
 import myteaparty.tea_vendors as vendors
 
@@ -48,7 +46,8 @@ class TeaVendorImporter(object):
             (get_or_create(name='Thé rouge', slug='rouge', is_origin=False), ['Thé rouge', 'Thé rouge sans théine',
                                                                               'sans théine', 'Rooibos']),
             (get_or_create(name='Thé fûmé', slug='fume', is_origin=False), ['Thé fûmé', 'Thé fumé']),
-            (get_or_create(name='Thé au Jasmin', slug='jasmin', is_origin=False), ['Thé au jasmin', 'Jasmin', 'Jasmine']),
+            (get_or_create(name='Thé au Jasmin', slug='jasmin', is_origin=False), ['Thé au jasmin', 'Jasmin',
+                                                                                   'Jasmine']),
             (get_or_create(name='Infusion', slug='infusion', is_origin=False), ['Infusion', 'Infusion de fruits']),
 
             (get_or_create(name='Grand cru', slug='grand-cru', is_origin=False), ['Grand cru']),
@@ -79,7 +78,7 @@ class TeaVendorImporter(object):
             except requests.RequestException as e:
                 last_exception = e
         click.echo('Unable to get « {} », giving up after {} retries.\n{}'
-                        .format(url, self.retries, last_exception), err=True)
+                   .format(url, self.retries, last_exception), err=True)
         return None
 
     def _retrieve_teas_types(self, *haystacks):
@@ -95,7 +94,7 @@ class TeaVendorImporter(object):
         for tea_type, keywords in self._cached_tea_types:
             keywords_lower = [w.lower() for w in keywords]
             if tea_type not in types and any(keyword in haystack for keyword in keywords_lower
-                                                                 for haystack in haystacks):
+                                             for haystack in haystacks):
                 types.append(tea_type)
 
         return types
@@ -224,7 +223,7 @@ def import_command(dry_run, importer):
 
     if not importers_active:
         if not importers:
-            click.echo(f'No imported specified. Valid importers: {", ".join(importers_names)}.'.format(', '.join(importers_names)), err=True)
+            click.echo(f'No imported specified. Valid importers: {", ".join(importers_names)}.', err=True)
         else:
             click.echo('No valid importer selected. Exiting.', err=True)
         click.echo('Use --help for help.', err=True)
@@ -242,8 +241,8 @@ def import_command(dry_run, importer):
 
     titlecase.set_small_word_list(titlecase.SMALL + '|un|une|de|des|du|d|le|la|les|l|au|à|a|s')
     used_slugs = Tea.select(Tea.slug, TeaVendor.name).join(TeaVendor).order_by(TeaVendor.name).execute()
-    used_slugs = {vendor:[slug.slug for slug in vendor_slugs] for vendor, vendor_slugs
-                                                              in groupby(used_slugs, key=lambda r: r.vendor.name)}
+    used_slugs = {vendor: [slug.slug for slug in vendor_slugs] for vendor, vendor_slugs
+                  in groupby(used_slugs, key=lambda r: r.vendor.name)}
 
     click.echo('\nRetrieving references...', nl=False)
 
@@ -289,11 +288,13 @@ def import_command(dry_run, importer):
             vendor = data['vendor']
 
             data['name'] = titlecase.titlecase(data['name'].title())
-            data['deleted'] = None  # If a previously-deleted tea is retrieved, it is no longer deleted,
-                                    # and unmarked as such in our database.
+
+            # If a previously-deleted tea is retrieved, it is no longer deleted,
+            # and unmarked as such in our database.
+            data['deleted'] = None
 
             # If an illustration cannot be retrieved, the key is
-            # removed so the old one is kept in case of an update.
+            # removed so the old one is kept in case of an update.
             # (If this is an insertion, the default value is None
             # anyway.)
             # To remove a previously saved illustration, set this to
@@ -368,8 +369,10 @@ def import_command(dry_run, importer):
         bulk_inserts = {}
         for tea in teas_to_insert:
             k = '-'.join(tea.keys())
-            if k in bulk_inserts: bulk_inserts[k].append(tea)
-            else: bulk_inserts[k] = [tea]
+            if k in bulk_inserts:
+                bulk_inserts[k].append(tea)
+            else:
+                bulk_inserts[k] = [tea]
 
         for bulk_insert in bulk_inserts.values():
             Tea.insert_many(bulk_insert).execute()
@@ -383,8 +386,8 @@ def import_command(dry_run, importer):
                                   TeaVendor.name == types_to_insert_vendor)):
 
                 if (str(tea.vendor_internal_id) not in types_to_insert[types_to_insert_vendor]
-                    or not types_to_insert[types_to_insert_vendor][str(tea.vendor_internal_id)]):
-                    continue  # No types for this one
+                        or not types_to_insert[types_to_insert_vendor][str(tea.vendor_internal_id)]):
+                    continue  # No types for this one
 
                 # We remove existing types, if any
                 TypeOfATea.delete().where(TypeOfATea.tea == tea).execute()
@@ -393,7 +396,7 @@ def import_command(dry_run, importer):
                     types_insert.append({'tea': tea, 'tea_type': tea_type})
 
         if types_insert:
-            # Removes duplicates, if any
+            # Removes duplicates, if any
             types_insert = [i for n, i in enumerate(types_insert) if i not in types_insert[n + 1:]]
             TypeOfATea.insert_many(types_insert).execute()
 
@@ -418,8 +421,14 @@ def import_command(dry_run, importer):
 
 
 @app.cli.command('generate-thumbnails')
-@click.option('--regenerate', is_flag=True, default=False, help='If specified, existing thumbnails will be re-genered')
-@click.option('--directory', default=Path(app.root_path) / 'static' / app.config['STATIC_FILES_FOLDER'], show_default=True, help='The root directory where files are stored')
+@click.option('--regenerate',
+              is_flag=True,
+              default=False,
+              help='If specified, existing thumbnails will be re-genered')
+@click.option('--directory',
+              default=Path(app.root_path) / 'static' / app.config['STATIC_FILES_FOLDER'],
+              show_default=True,
+              help='The root directory where files are stored')
 def generate_thumbnails_command(regenerate, directory):
     directory = Path(directory)
     if not directory.exists():
@@ -428,14 +437,14 @@ def generate_thumbnails_command(regenerate, directory):
 
     formats = list(app.config['STATIC_FILES_FORMATS'].keys())
     formats += [format + '@2x' for format in formats]
-    
+
     for file in directory.walkfiles():
         if is_post_processed_file(file):
             continue
 
         file_dir = file.dirname()
         files_all_ok = all([(file_dir / get_external_filename(file, file_format)).exists() for file_format in formats])
-        
+
         if not files_all_ok or regenerate:
             click.echo(f'Generating thumbnails for {file.name}…{" [regenerated]" if regenerate else ""}')
             generate_thumbnails(file)

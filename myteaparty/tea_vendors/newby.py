@@ -1,16 +1,13 @@
-import click
-import datetime
+
 import math
 import random
-import requests
 import re
 
 from bs4 import BeautifulSoup, UnicodeDammit
 
 from ..commands import TeaVendorImporter
-from ..teaparty import app
 from ..utils import save_distant_file
-from ..model import Tea, TeaType, TypeOfATea, TeaVendor, database
+from ..model import TeaVendor
 
 
 class NewbyImporter(TeaVendorImporter):
@@ -29,7 +26,8 @@ class NewbyImporter(TeaVendorImporter):
 
         self.failed = []
 
-        newby_logo = save_distant_file('https://www.newbyteas.co.uk/skin/frontend/ultimo/default/images/newbylogo2017.png')
+        newby_logo = save_distant_file('https://www.newbyteas.co.uk'
+                                       '/skin/frontend/ultimo/default/images/newbylogo2017.png')
         self.vendor, _ = TeaVendor.get_or_create(
             name='Newby',
             slug='newby',
@@ -41,12 +39,12 @@ class NewbyImporter(TeaVendorImporter):
             }
         )
 
-        self.re_tip_place = re.compile(r'place ((?P<amount_silk>[a-zA-Z0-9]+) silken pyramid|(?P<amount_g>\d+) ?g per cup|(?P<amount_spoons>[a-zA-Z0-9]+) teaspoon ?(?:of tea)?(?:\((?:\d)+g\))?) (?:in|into) (?P<boil_type>water|boiled water|freshly boiled water|freshly, fully boiled water)')
-        self.re_tip_use_spoon = re.compile(r'use (?P<amount_spoons>[a-zA-Z0-9]+) tea(?:- )?spoons? (?:of tea)? per (?P<container>cup|(?:[0-9- ])+ ?(?:ml|Ml|ML))(?: \(approx\.? (?P<container_size>(?:[0-9- ])+ ?(?:ml|Ml|ML))\))?')
-        self.re_tip_use_g = re.compile(r'use (?P<amount_g>\d+) ?g of (?:matcha powder|tea) per (?P<container_size>(?:[0-9- ])+ ?(?:ml|Ml|ML)) of (?P<boiled>boiled)? ?water')
+        self.re_tip_place = re.compile(r'place ((?P<amount_silk>[a-zA-Z0-9]+) silken pyramid|(?P<amount_g>\d+) ?g per cup|(?P<amount_spoons>[a-zA-Z0-9]+) teaspoon ?(?:of tea)?(?:\((?:\d)+g\))?) (?:in|into) (?P<boil_type>water|boiled water|freshly boiled water|freshly, fully boiled water)')  # noqa
+        self.re_tip_use_spoon = re.compile(r'use (?P<amount_spoons>[a-zA-Z0-9]+) tea(?:- )?spoons? (?:of tea)? per (?P<container>cup|(?:[0-9- ])+ ?(?:ml|Ml|ML))(?: \(approx\.? (?P<container_size>(?:[0-9- ])+ ?(?:ml|Ml|ML))\))?')  # noqa
+        self.re_tip_use_g = re.compile(r'use (?P<amount_g>\d+) ?g of (?:matcha powder|tea) per (?P<container_size>(?:[0-9- ])+ ?(?:ml|Ml|ML)) of (?P<boiled>boiled)? ?water')  # noqa
         self.re_tip_use_water = re.compile(r'use (?:fresh, fully boiled|freshly boiled|freshly-boiled) water')
 
-        self.re_tip_extract_temp = re.compile(r'(?:left to cool to|cooled to|at a temperature of|cooled at|until it reaches about) (?P<temperature>[0-9- ]+)(?: )*(?:c|C|degrees?)')
+        self.re_tip_extract_temp = re.compile(r'(?:left to cool to|cooled to|at a temperature of|cooled at|until it reaches about) (?P<temperature>[0-9- ]+)(?: )*(?:c|C|degrees?)')  # noqa
         self.re_tip_extract_time = re.compile(r'(?:brew )?for (?P<duration>[a-zA-Z0-9- ]{1,}?) (?:minutes?|mins?)')
 
         self.re_remove_non_numbers = re.compile('[^0-9.]')
@@ -120,7 +118,6 @@ class NewbyImporter(TeaVendorImporter):
         """
         self.failed = []
         self.teas_ids = []
-        titles = []
 
         for link in self.teas_links:
             r = self._get(link)
@@ -186,12 +183,12 @@ class NewbyImporter(TeaVendorImporter):
                     if 'http://' in tips_raw:
                         if any([tag in tea_tags for tag in ['white tea', 'green tea']]):
                             tips_temperature = 80
-                            tips_duration = 3*60
+                            tips_duration = 3 * 60
                         else:
                             tips_temperature = 95
-                            tips_duration = 4*60
+                            tips_duration = 4 * 60
                         if 'loose leaf tea' not in tea_tags:
-                            tips_duration -= 1*60
+                            tips_duration -= 1 * 60
                     elif tips_raw.lower() != 'n/a':
                         # We here have to parse the human-friendly help text to retrieve the tips
                         tips_raw_lower_phrases = [p.strip() for p in tips_raw.lower().replace(u'\u00B0', ' ')
@@ -215,7 +212,7 @@ class NewbyImporter(TeaVendorImporter):
                                     ints.append(words[n])
                                 try:
                                     ints.append(int(n, 10))
-                                except:
+                                except ValueError:
                                     pass
                             return float(sum(ints)) / float(len(ints))
 
@@ -240,14 +237,20 @@ class NewbyImporter(TeaVendorImporter):
                                                                                     and match_place['container_size']
                                                                                     else match_place['container'])
                                     if container_size:
-                                        tips_volume = int(human_number_to_int(container_size.lower().replace('ml', '').strip()) / 10.0)
+                                        tips_volume_ml = human_number_to_int(container_size.lower()
+                                                                                           .replace('ml', '')
+                                                                                           .strip())
+                                        tips_volume = int(tips_volume_ml / 10.0)
 
                             match_place = self.re_tip_use_g.search(tip)
                             if match_place:
                                 if match_place['amount_g']:
                                     tips_mass = human_number_to_int(match_place['amount_g']) * 1000
                                 if match_place['container_size']:
-                                    tips_volume = int(human_number_to_int(match_place['container_size'].lower().replace('ml', '').strip()) / 10.0)
+                                    tips_volume_ml = human_number_to_int(match_place['container_size'].lower()
+                                                                                                      .replace('ml', '')
+                                                                                                      .strip())
+                                    tips_volume = int(tips_volume_ml / 10.0)
                                 if match_place['boiled']:
                                     tips_temperature = 95
 
@@ -268,8 +271,10 @@ class NewbyImporter(TeaVendorImporter):
 
                             if 'watch as the bulb blossoms' in tip or 'whisk well until the powder' in tip:
                                 extra = tip.capitalize()
-                                if tips_extra is not None: tips_extra += ' ' + extra
-                                else: tips_extra = extra
+                                if tips_extra is not None:
+                                    tips_extra += ' ' + extra
+                                else:
+                                    tips_extra = extra
 
                     else:
                         tips_volume = None
@@ -288,15 +293,14 @@ class NewbyImporter(TeaVendorImporter):
                             price_unit = str(int(float(price_unit_elem.get_text().strip()))) + 'g'
                         else:
                             raise ValueError
-                    except:
+                    except Exception:
                         price_unit = '100g'
-
 
             # Retrieves an unique ID
 
             try:
                 tea_id_numeric = product_elem.find(class_='sku').find(class_='value').get_text().strip()
-            except:
+            except Exception:
                 tea_id_numeric = str(random.randint(10000000, 99999999))
 
             if tea_id_numeric in self.teas_ids:
@@ -305,7 +309,6 @@ class NewbyImporter(TeaVendorImporter):
                 tea_id_numeric += str(random.randint(10000000, 99999999))
 
             self.teas_ids.append(tea_id_numeric)
-
 
             # Retrieves an image
 
@@ -316,7 +319,6 @@ class NewbyImporter(TeaVendorImporter):
                 image_elem = image_elem.find('a', class_='product-image-gallery')
                 if image_elem and image_elem.get('href'):
                     image = save_distant_file(image_elem.get('href'))
-
 
             # Retrieves the price
 
@@ -329,14 +331,12 @@ class NewbyImporter(TeaVendorImporter):
                     price_raw = price_elem.get_text().strip()
                     try:
                         price = float(self.re_remove_non_numbers.sub('', price_raw).replace(',', '.'))
-                    except:
+                    except Exception:
                         price = None
-
 
             # Determines the types
 
             types = self._retrieve_teas_types(*tea_tags, name, description, long_description)
-
 
             # Returns the thing
 
@@ -380,5 +380,6 @@ class NewbyImporter(TeaVendorImporter):
         :return: a list containing the retrieved teas internal IDs.
         """
         return self.teas_ids
+
 
 Importer = NewbyImporter

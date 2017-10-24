@@ -1,14 +1,11 @@
-import click
-import datetime
-import requests
 import re
 
 from bs4 import BeautifulSoup, UnicodeDammit
 
 from ..commands import TeaVendorImporter
-from ..teaparty import app
 from ..utils import save_distant_file
-from ..model import Tea, TeaType, TypeOfATea, TeaVendor, database
+from ..model import TeaVendor
+
 
 class MariageFreresImporter(TeaVendorImporter):
 
@@ -172,7 +169,6 @@ class MariageFreresImporter(TeaVendorImporter):
         """
         self.failed = []
 
-        tea_types = self.get_tea_types()
         re_remove_non_numbers = re.compile('[^0-9.]')
 
         for tea_link in self.teas_links:
@@ -319,5 +315,6 @@ class MariageFreresImporter(TeaVendorImporter):
         :return: a list containing the retrieved teas internal IDs.
         """
         return self.teas_ids
+
 
 Importer = MariageFreresImporter
