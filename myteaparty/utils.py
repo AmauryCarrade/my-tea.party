@@ -164,7 +164,7 @@ def call_after_request_callbacks(response):
 
 class PeeweeDebugPanel(OrigPeeweeDebugPanel):
     '''
-    Improved Peewee debug panel (with queries amount in subtitle)
+    Improved Peewee debug panel (with queries amount & total duration in subtitle)
     '''
     def __init__(self, *args, **kwargs):
         super(PeeweeDebugPanel, self).__init__(*args, **kwargs)
@@ -173,4 +173,5 @@ class PeeweeDebugPanel(OrigPeeweeDebugPanel):
         return 'Peewee'
 
     def nav_subtitle(self):
-        return f'{self.handler.amount} {"queries" if self.handler.amount > 1 else "query"}'
+        total_duration = sum([duration for duration, _ in self.handler.records]) * 1000
+        return f'{self.handler.amount} {"queries" if self.handler.amount > 1 else "query"} ({total_duration:0.2f} ms)'
