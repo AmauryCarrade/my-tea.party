@@ -10,12 +10,9 @@ from itertools import cycle, islice, groupby
 from path import Path
 from slugify import slugify
 
-from .teaparty import app
-from .model import Tea, TeaType, TypeOfATea, TeaVendor, database
-from .model import get_or_create as get_or_create_model
-from .utils import generate_thumbnails, get_external_filename, is_post_processed_file
-
-import myteaparty.tea_vendors as vendors
+from ..teaparty import app
+from ..model import Tea, TeaType, TypeOfATea, TeaVendor, database
+from ..model import get_or_create as get_or_create_model
 
 
 class TeaVendorImporter(object):
@@ -208,7 +205,13 @@ def import_command(dry_run, importer):
     Imports teas from the specified vendors.
     ”all” is a special value to import from all existing vendors at once.
     """
-    importers_names = [name for _, name, _ in pkgutil.iter_modules([os.path.dirname(vendors.__file__)])]
+    importers_names = [
+        name
+        for _, name, _
+        in pkgutil.iter_modules([
+            Path(importlib.import_module(app.config['TEA_IMPORTERS_PACKAGE']).__file__).dirname()
+        ])
+    ]
     importers_active = []
     importers = importer
 
@@ -229,7 +232,7 @@ def import_command(dry_run, importer):
         click.echo('Use --help for help.', err=True)
         return
 
-    importers_instances = [importlib.import_module('.' + importer, package=vendors.__name__)
+    importers_instances = [importlib.import_module('.' + importer, package=app.config['TEA_IMPORTERS_PACKAGE'])
                                     .Importer(get_crawling_session()) for importer in importers_active]
 
     click.echo(click.style('\nStarting import from {}...'.format(
@@ -418,35 +421,3 @@ def import_command(dry_run, importer):
         click.echo('Committing changes...', nl=False)
         database.commit()
     click.echo(' Done.')
-
-
-@app.cli.command('generate-thumbnails')
-@click.option('--regenerate',
-              is_flag=True,
-              default=False,
-              help='If specified, existing thumbnails will be re-genered')
-@click.option('--directory',
-              default=Path(app.root_path) / 'static' / app.config['STATIC_FILES_FOLDER'],
-              show_default=True,
-              help='The root directory where files are stored')
-def generate_thumbnails_command(regenerate, directory):
-    directory = Path(directory)
-    if not directory.exists():
-        click.echo('Directory does not exists. Exiting.', err=True)
-        return
-
-    formats = list(app.config['STATIC_FILES_FORMATS'].keys())
-    formats += [format + '@2x' for format in formats]
-
-    for file in directory.walkfiles():
-        if is_post_processed_file(file):
-            continue
-
-        file_dir = file.dirname()
-        files_all_ok = all([(file_dir / get_external_filename(file, file_format)).exists() for file_format in formats])
-
-        if not files_all_ok or regenerate:
-            click.echo(f'Generating thumbnails for {file.name}…{" [regenerated]" if regenerate else ""}')
-            generate_thumbnails(file)
-
-    click.echo('Done.')

@@ -5,6 +5,14 @@
 # DATABASE = 'mysql://user:passwd@ip:port/my_db'
 DATABASE = ''
 
+# Connection params (for example for pgsql: { encoding: 'utf-8' })
+DATABASE_CONNECTION_PARAMS = {}
+
+
+# Importers
+
+TEA_IMPORTERS_PACKAGE = 'myteaparty.commands.tea_importers'
+
 
 # Search options
 
@@ -46,3 +54,19 @@ COOKIE_ACTIVE_LIST = 'mtp_tea_active_list'
 # A random secret key
 
 SECRET_KEY = 'some random string here'
+
+
+# Debug toolbar
+
+DEBUG_TB_PANELS = [
+    'flask_debugtoolbar.panels.versions.VersionDebugPanel',
+    'flask_debugtoolbar.panels.timer.TimerDebugPanel',
+    'flask_debugtoolbar.panels.headers.HeaderDebugPanel',
+    'flask_debugtoolbar.panels.request_vars.RequestVarsDebugPanel',
+    'flask_debugtoolbar.panels.template.TemplateDebugPanel',
+#   'flask_debugtoolbar.panels.sqlalchemy.SQLAlchemyDebugPanel',
+#   'flask_pw.debugtoolbar.PeeweeDebugPanel',
+    'myteaparty.utils.PeeweeDebugPanel',
+    'flask_debugtoolbar.panels.logger.LoggingPanel',
+    'flask_debugtoolbar.panels.profiler.ProfilerDebugPanel',
+]

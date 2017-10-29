@@ -1,13 +1,12 @@
-
 import math
 import random
 import re
 
 from bs4 import BeautifulSoup, UnicodeDammit
 
-from ..commands import TeaVendorImporter
-from ..utils import save_distant_file
-from ..model import TeaVendor
+from ..import_teas import TeaVendorImporter
+from ...utils import save_distant_file
+from ...model import TeaVendor
 
 
 class NewbyImporter(TeaVendorImporter):

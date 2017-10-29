@@ -14,10 +14,14 @@ def _db_close(exc):
         database.close()
 
 
-from .commands import *  # noqa
+from .commands import *
 
 from .views.pages import *  # noqa
 from .views.search import *  # noqa
 from .views.teas import *  # noqa
 from .views.lists import *  # noqa
 from .views.fallbacks import *  # noqa
+
+if app.debug:
+	from flask_debugtoolbar import DebugToolbarExtension
+	toolbar = DebugToolbarExtension(app)

@@ -4,9 +4,11 @@ import requests
 import shutil
 
 from flask import request, url_for, g
+from flask_pw.debugtoolbar import PeeweeDebugPanel as OrigPeeweeDebugPanel
 from path import Path
 from PIL import Image
 from werkzeug import url_encode
+
 from .teaparty import app
 
 
@@ -158,3 +160,17 @@ def call_after_request_callbacks(response):
     for callback in getattr(g, 'after_request_callbacks', ()):
         callback(response)
     return response
+
+
+class PeeweeDebugPanel(OrigPeeweeDebugPanel):
+    '''
+    Improved Peewee debug panel (with queries amount in subtitle)
+    '''
+    def __init__(self, *args, **kwargs):
+        super(PeeweeDebugPanel, self).__init__(*args, **kwargs)
+
+    def nav_title(self):
+        return 'Peewee'
+
+    def nav_subtitle(self):
+        return f'{self.handler.amount} {"queries" if self.handler.amount > 1 else "query"}'

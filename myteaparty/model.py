@@ -1,21 +1,30 @@
 import datetime
 
+from flask_pw import Peewee
+from path import Path
 from peewee import Model, CharField, TextField, IntegerField, FloatField, DateTimeField, \
                    BooleanField, ForeignKeyField, CompositeKey, SqliteDatabase
 from playhouse.db_url import connect
 from .teaparty import app
 
 
-database = connect(app.config['DATABASE'] or 'sqlite:///db.sqlite')
+app.config['PEEWEE_DATABASE_URI'] = app.config['DATABASE'] or 'sqlite:///myteaparty.sqlite'
+app.config['PEEWEE_CONNECTION_PARAMS'] = app.config['DATABASE_CONNECTION_PARAMS'] or {}
+app.config['PEEWEE_MODELS_MODULE'] = 'myteaparty.model'
+
+app.config['PEEWEE_MIGRATE_TABLE'] = 'tea_migrations_history'
+app.config['PEEWEE_MIGRATE_DIR'] = Path(app.root_path) / 'migrations'
+
+pwdb = Peewee(app)
+
+database = pwdb.database
 
 
 class UnknownField(object):
     pass
 
 
-class BaseModel(Model):
-    class Meta:
-        database = database
+BaseModel = pwdb.Model
 
 
 class TeaVendor(BaseModel):
