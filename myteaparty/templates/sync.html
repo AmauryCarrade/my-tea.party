@@ -83,17 +83,18 @@
                             <span class="sync-url-itself">{{ url_for('sync_list_newdevice', share_key=list.share_key, _external=True) }}</span>
                             <span class="fa fa-clipboard"></span>
                         </p>
-                        <p class="sync-url-copy-message">
-                            &nbsp;
-                        </p>
 
-                        <p>
-                            Ce lien expire le {{ list.share_key_valid_until.strftime('%d/%m/%Y à %H:%M') }}. <a href="{{ url_for('sync_list', regen=True, list=list.cookie_key) }}">Regénérer</a>.
-                        </p>
+                        <figure class="sync-url-qr">
+                            <img src="{{ url_for('sync_code_qr', share_key=list.share_key) }}" alt="QR Code pour récupérer le lien" />
+                            <figcaption>
+                                Vous pouvez également scanner ce QRCode pour récupérer plus aisément votre liste sur votre téléphone.
+                            </figcaption>
+                        </figure>
 
                         <aside class="message is-danger">
                             <div class="message-body">
-                                <strong>Attention !</strong> Toute personne ayant ce lien dispose d'un accès en <strong>lecture et écriture</strong> à votre liste. Ne le partagez qu'avec vous-même ou vos proches.
+                                <strong>Attention !</strong> Toute personne ayant ce lien dispose d'un accès en <strong>lecture et écriture</strong> à votre liste. Ne le partagez qu'avec vous-même ou vos proches.<br />
+                                Ce lien expire le {{ list.share_key_valid_until.strftime('%d/%m/%Y à %H:%M') }}. <a href="{{ url_for('sync_list', regen=True, list=list.cookie_key) }}">Regénérer</a>.
                             </div>
                         </aside>
                     </div>

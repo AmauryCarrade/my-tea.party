@@ -1,15 +1,18 @@
+import os
+import qrcode
 import random
+import tempfile
 import uuid
 
 from datetime import datetime, timedelta
-from flask import jsonify, request, redirect, url_for, render_template, abort
+from flask import jsonify, request, redirect, url_for, render_template, abort, send_file
+from path import Path
 from peewee import fn
 from playhouse.flask_utils import get_object_or_404
 
 from ..model import Tea, TeaList, TeaListItem
 from ..teaparty import app
 from ..utils import after_request
-
 
 _cookies_properties = {
     'expires': datetime.now() + timedelta(days=366 * 84),
@@ -336,7 +339,6 @@ def switch_last_viewed_list(cookie_key):
     return redirect(url_for('homepage'))
 
 
-# TODO BELOW - switch to multi-lists
 @app.route('/sync')
 def sync_list():
     tea_lists = get_tea_lists_from_request()
@@ -359,6 +361,32 @@ def sync_list():
         tea_lists=tea_lists,
         tea_favorites_list=tea_favorites_list
     )
+
+
+@app.route('/sync/qr/<int:share_key>')
+def sync_code_qr(share_key):
+    url = url_for('sync_list_newdevice', share_key=share_key, _external=True)
+
+    qr = qrcode.QRCode(
+        box_size=6,
+        border=2
+    )
+
+    qr.add_data(url)
+    qr.make(fit=True)
+
+    qr_img = qr.make_image(fill_color="white", back_color="#222")
+
+    qr_io, qr_io_path = tempfile.mkstemp(suffix='.jpeg')
+    qr_io = os.fdopen(qr_io)
+
+    qr_img.save(qr_io, 'JPEG', quality=70)
+
+    @after_request
+    def cleanup(request):
+        Path(qr_io_path).remove()
+
+    return send_file(qr_io_path, mimetype='image/jpeg')
 
 
 @app.route('/s/<share_key>')

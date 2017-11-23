@@ -4,7 +4,7 @@
 			font-size: large;
 
 			&.sync-url {
-				margin: 3em;
+				margin: 1.65em;
 				margin-bottom: .4em;
 				text-align: center;
 				font-size: 2.4em;
@@ -20,12 +20,16 @@
 					color: black;
 				}
 			}
+		}
 
-			&.sync-url-copy-message {
-				margin-bottom: 4em;
+		.sync-url-qr {
+			margin: 2em 0 4em 0;
 
-				text-align: center;
-				font-size: 1em;
+			text-align: center;
+			font-size: 1em;
+
+			img {
+				max-width: 220px;
 			}
 		}
 
