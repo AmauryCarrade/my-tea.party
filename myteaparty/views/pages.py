@@ -1,6 +1,6 @@
 from flask import render_template
 
-from .lists import get_teas_in_active_list
+from .lists import get_teas_in_favorites_list, get_tea_lists_from_request, get_last_viewed_list_key
 from ..model import TeaVendor
 from ..teaparty import app
 
@@ -9,7 +9,9 @@ from ..teaparty import app
 def homepage():
     return render_template(
         'index.html',
-        active_list_teas=get_teas_in_active_list(),
+        favorites_list_teas=get_teas_in_favorites_list(),
+        lists_teas=get_tea_lists_from_request(),
+        last_viewed_list_key=get_last_viewed_list_key(),
         vendors=TeaVendor.select().order_by(TeaVendor.order)
     )
 

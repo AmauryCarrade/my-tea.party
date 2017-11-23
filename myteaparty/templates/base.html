@@ -67,36 +67,37 @@
     <section class="hero is-primary {% block hero_classes %}{% endblock %}" {% block hero_attributes %}{% endblock %}>
         {% block hero_head %}
         <div class="hero-head">
-            <header class="nav">
-                <div class="container">
-                    <div class="nav-left is-hidden-mobile">
+            <nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="{{ url_for('homepage') }}">
+                        <span class="fa fa-coffee fa-2x"></span>
+                    </a>
+
+                    <button class="button is-text navbar-burger" data-target="mtp-nav-menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+                <div class="navbar-menu" id="mtp-nav-menu">
+                    <div class="navbar-start">
                         {% block menu_left %}
-                        <a href="{{ url_for('all_teas') }}" class="nav-item">Tous les thés</a>
-                        <a href="{{ url_for('by_type', tea_type_slug='darjeeling') }}" class="nav-item">Origines</a>
-                        <a href="{{ url_for('by_vendor') }}" class="nav-item is-hidden-mobile">Fabriquants</a>
+                            <a href="{{ url_for('all_teas') }}" class="navbar-item">
+                                Tous les thés
+                            </a>
+                            <a href="{{ url_for('by_type', tea_type_slug='darjeeling') }}" class="navbar-item">
+                                Origines
+                            </a>
+                            <a href="{{ url_for('by_vendor') }}" class="navbar-item">
+                                Fabriquants
+                            </a>
                         {% endblock %}
                     </div>
-                    <div class="nav-center is-hidden-mobile">
-                        {% block menu_center %}
-                        <h1><a href="{{ url_for('homepage') }}"><span class="fa fa-coffee"></span></a></h1>
-                        {% endblock %}
-                    </div>
-                    <div class="nav-right is-hidden-mobile">
+                    <div class="navbar-end">
                         {% block menu_right %}{% endblock %}
                     </div>
-
-                    <div class="nav-left is-hidden-tablet">
-                        {% block menu_left_mobile %}
-                        {{ self.menu_center() }}
-                        {% endblock %}
-                    </div>
-                    <div class="nav-right is-hidden-tablet">
-                        {% block menu_right_mobile %}
-                        {{ self.menu_left() }}
-                        {% endblock %}
-                    </div>
                 </div>
-            </header>
+            </nav>
         </div>
         {% endblock %}
 
@@ -123,12 +124,30 @@
 
         window.mtp_config = {
             'cookies': {
-                'active_list': {{ config.COOKIE_ACTIVE_LIST|tojson }},
-                'lists': {{ config.COOKIE_LISTS|tojson }}
+                'active_list': {{ config.COOKIE_FAVORITES_LIST|tojson }},
+                'lists': {{ config.COOKIE_LISTS|tojson }},
+                'last_viewed_list': {{ config.COOKIE_LAST_VIEWED_LIST|tojson }}
             }
         };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all "navbar-burger" elements
+            var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            if ($navbarBurgers.length > 0) {
+                $navbarBurgers.forEach(function ($el) {
+                    $el.addEventListener('click', function () {
+                        var target = $el.dataset.target;
+                        var $target = document.getElementById(target);
+
+                        $el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+        });
     </script>
 
+    <script type="text/javascript" src="{{ url_for('static', filename='assets/js/utils.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='assets/js/tea-lists.js') }}"></script>
 
     {% block javascripts %}{% endblock %}

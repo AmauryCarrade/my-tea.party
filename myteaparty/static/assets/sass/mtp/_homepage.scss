@@ -39,7 +39,7 @@
     }
 }
 
-#favorite-teas {
+.teas-list {
     .card {
         border-radius: 5px;
         background-color: rgba(255, 255, 255, .89);
@@ -51,6 +51,10 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+
+            span.fa-star {
+                margin-right: .3em;
+            }
 
             a {
                 color: $page_background !important;
@@ -108,7 +112,7 @@
 }
 
 @include mobile {
-    #favorite-teas .card {
+    .teas-list .card {
         border-radius: 0;
 
         &.no-tea-left h3 .tag-empty {
@@ -130,5 +134,42 @@
     .columns {
         margin-top: .8em;
         text-align: center;
+    }
+}
+
+#favorite-teas {
+    padding-bottom: 0;
+}
+
+#lists-of-teas {
+    h2 {
+        margin-bottom: 1.4rem;
+
+        color: white;
+        font-size: 1.2em;
+        text-align: center;
+
+        border-top: solid 1px lighten($page-background, 15%);
+
+        span {
+            display: inline-block;
+            position: relative;
+            top: -.75em;
+            background-color: $page-background;
+            padding: 0 1.1em;
+        }
+    }
+
+    aside.menu {
+        ul.menu-list a {
+            color: #efefef;
+
+            &.is-active {
+                color: #fff;
+            }
+            &:not(.is-active):hover {
+                color: $page-background;
+            }
+        }
     }
 }

@@ -41,6 +41,7 @@
         font-style: italic;
         border-top: solid 1px #dbdbdb;
         padding-top: 1.5rem;
+        margin-top: 1.8rem;
         a {
             font-weight: bold;
         }
@@ -108,7 +109,7 @@
         display: none;
         position: relative;
         left: 0;
-        bottom: -10px;
+        bottom: -6px;
     }
 
     &.active {
@@ -136,6 +137,74 @@
         }
         .button-progress-bar {
             display: block;
+        }
+    }
+}
+
+.tea-list-selector {
+    font-style: normal;
+
+    .dropdown-item {
+        font-weight: normal !important;
+        font-size: 1rem;
+
+        .fa.list-unchecked {
+            color: transparent;
+        }
+
+        &:hover .fa.list-unchecked {
+            color: #ccc;
+        }
+    }
+
+    &.tea-list-selector-mobile {
+        display: inline-block;
+        position: relative;
+        top: 1px;
+
+        margin-left: 1em;
+
+        .panel {
+            background-color: #fff;
+            border-radius: 3px;
+
+            .panel-icon.list-unchecked {
+                color: transparent;
+            }
+
+            .panel-block {
+                color: $text !important;
+                text-align: left;
+
+                .tea-list-selector-empty {
+                    min-width: unset;
+                }
+            }
+        }
+    }
+
+    .tea-list-selector-empty {
+        min-width: 25em;
+        text-align: justify;
+
+        h5 {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+    }
+
+    .toggle-list-link {
+        &.is-error {
+            color: $danger;
+        }
+    }
+
+    form {
+        width: 100%;
+        input {
+            @include placeholder {
+                color: lighten($text, 4%) !important;
+            }
         }
     }
 }

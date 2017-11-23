@@ -12,19 +12,39 @@ body {
         background-image: $banner_image;
         background-position: 66% 12%;
 
-        header.nav {
-            text-align: center;
-            margin-top: 8px;
-            box-shadow: none !important;
-
-            h1 {
-                font-size: 180%;
-                position: relative;
-                margin-left: 1rem;
+        nav.navbar {
+            button.button.navbar-burger {
+                &, &:hover, &:active, &:focus, &.is-active {
+                    color: darken($button-text-hover-background-color, 5%);
+                    background-color: transparent;
+                    box-shadow: none;
+                }
             }
 
-            .nav-right, .nav-left, .nav-center {
-                overflow: hidden;
+            .navbar-menu.is-active {
+                position: absolute;
+                z-index: 1000;
+            }
+
+            .main-tea-search.main-tea-search-inmenu {
+                padding: 0;
+                margin: 0;
+                width: 32rem;
+
+                position: relative;
+                top: .8rem;
+
+                input.big-search-input {
+                    font-size: 1em;
+                    padding: 4px;
+                    border-radius: 4px;
+                }
+
+                .main-search-input-container button {
+                    left: -2px;
+                    top: -25px;
+                    font-size: .9em;
+                }
             }
         }
     }
@@ -34,44 +54,35 @@ body {
     z-index: 3;
 }
 
-.main-tea-search.main-tea-search-inmenu {
-    padding: 0;
-    margin: 0;
-    width: 50%;
-    position: relative;
-    top: 8px;
+@include touch {
+    .hero .hero-head nav.navbar {
+        margin-top: 0;
 
-    input.big-search-input {
-        font-size: 1em;
-        padding: 4px;
-        border-radius: 4px;
-    }
+        .navbar-menu {
+            width: 100%;
+        }
 
-    .main-search-input-container button {
-        left: -2px;
-        top: -25px;
-        font-size: .9em;
+        a.navbar-item:hover {
+            background-color: transparent;
+        }
+
+        .main-tea-search.main-tea-search-inmenu {
+            width: 100%;
+            padding-right: 0.4em;
+            top: 8px;
+        }
     }
 }
 
 @include mobile {
-    .hero .hero-head header.nav {
-        margin-top: 0;
+    .hero .hero-head nav.navbar {
+        .main-tea-search.main-tea-search-inmenu {
+            padding-left: 0.4em;
 
-        .nav-left h1 {
-            top: .5em;
+            input {
+                border-radius: 0;
+            }
         }
-
-        .nav-right a.nav-item {
-            display: inline;
-            position: relative;
-            top: .8rem;
-        }
-    }
-    .main-tea-search.main-tea-search-inmenu {
-        width: 100%;
-        padding-right: 0.4em;
-        top: 16px;
     }
 }
 

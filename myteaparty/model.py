@@ -5,6 +5,7 @@ from path import Path
 from peewee import Model, CharField, TextField, IntegerField, FloatField, DateTimeField, \
                    BooleanField, ForeignKeyField, CompositeKey, SqliteDatabase
 from playhouse.db_url import connect
+
 from .teaparty import app
 
 
@@ -98,6 +99,31 @@ class TeaList(BaseModel):
     cookie_key = CharField(unique=True)
     creator_ip = CharField()
     share_key_valid_until = DateTimeField(null=True)
+
+    def __iter__(self):
+        '''
+        We can iter over a TeaList model object to
+        get the teas inside.
+
+        for tea in teas_list:
+            ...
+        '''
+        teas_in_list = (
+            TeaListItem
+                .select()
+                .join(TeaList)
+                .join(Tea, on=Tea.id == TeaListItem.tea)
+                .where(TeaList.id == self.id)
+        )
+
+        for tea in teas_in_list:
+            yield tea
+
+    def __bool__(self):
+        '''
+        Truthy value if the list is not empty
+        '''
+        return TeaListItem.select().where(TeaListItem.tea_list == self).exists()
 
     class Meta:
         db_table = 'tea_lists'

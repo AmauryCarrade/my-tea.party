@@ -42,13 +42,15 @@ STATIC_FILES_FORMATS = {
 # Lists
 
 LISTS_DEFAULT_NAME = 'Liste par défaut'
+LISTS_FAVORITES_NAME = 'Favoris'
 SHARE_KEY_EXPIRES_AFTER = 1  # In hours
 
 
 # Cookies
 
 COOKIE_LISTS = 'mtp_tea_lists'
-COOKIE_ACTIVE_LIST = 'mtp_tea_active_list'
+COOKIE_FAVORITES_LIST = 'mtp_tea_favorites_list'
+COOKIE_LAST_VIEWED_LIST = 'mtp_tea_last_viewed_list'
 
 
 # A random secret key

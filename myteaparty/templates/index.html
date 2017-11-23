@@ -6,6 +6,7 @@
 
 {% block javascripts %}
 <script type="text/javascript" src="{{ url_for('static', filename='assets/js/time-counters.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='assets/js/homepage.js') }}"></script>
 
 <script type="text/javascript">
     var links = document.querySelectorAll(".card-buttons a");
@@ -38,65 +39,122 @@
 {% endblock %}
 
 
-{% block content %}
-<section id="favorite-teas" class="section">
-    <div class="container">
-        {% if active_list_teas %}
-            <div class="columns is-multiline">
-                {% for tea_item in active_list_teas %}
-                    {%- set tea = tea_item.tea -%}
-                    <div class="column is-one-third">
-                        <div class="card{% if tea_item.is_empty %} no-tea-left{% endif %}">
-                            <div class="card-content">
-                                <div class="content">
-                                    <div class="is-pulled-right card-buttons">
-                                        {# Soon
-                                        <a href="#"
-                                           class="card-reorder-handle is-hidden-mobile tooltip is-tooltip-left"
-                                           title="Réordonner"
-                                           aria-label="Réordonner"
-                                           data-tooltip="Réordonner">
-                                            <span class="fa fa-reorder"></span>
-                                        </a>
-                                        #}
-                                        <a href="{{ url_for('toggle_empty_tea_in_list', tea_id=tea.id, next=url_for('homepage')) }}"
-                                           class="tooltip is-tooltip-left"
-                                           title="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous"
-                                           aria-label="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous"
-                                           data-tooltip="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous">
-                                            <span class="fa fa-trash{% if not tea_item.is_empty %}-o{% endif %}"></span>
-                                        </a>
-                                        <a href="{{ url_for('remove_tea_from_list', tea_id=tea.id, next=url_for('homepage')) }}"
-                                           class="tooltip is-tooltip-left"
-                                           title="Supprimer le thé des favoris"
-                                           aria-label="Supprimer le thé des favoris"
-                                           data-tooltip="Supprimer le thé des favoris">
-                                            <span class="fa fa-close"></span>
-                                        </a>
-                                    </div>
-                                    <h3>
-                                        <a href="{{ url_for_tea(tea) }}">{{ tea.name }}</a>
-                                        {%- if tea_item.is_empty %}<span class="tag-empty">Épuisé</span>{% endif -%}
-                                    </h3>
-                                    <p>{{ tea.description }}</p>
-                                    <ul class="tea-tips-list">
-                                        {{ tea_utils.list_tea_tips(tea) }}
-                                    </ul>
-                                </div>
-                            </div>
-                            <footer class="card-footer">
-                                <a class="card-footer-item button-progress" data-time="{{ tea.tips_duration }}" data-name="{{ tea.name }}">
-                                    <span class="button-progress-label">Lancer l'infusion</span>
-                                    <span class="button-progress-bar"></span>
+{% macro render_tea_list(tea_list, is_favorites=False, message_if_empty=False) %}
+    {% if tea_list %}
+    <div class="columns is-multiline teas-list">
+        {% for tea_item in tea_list %}
+            {%- set tea = tea_item.tea -%}
+            {%- set cookie_key = tea_list.cookie_key if not is_favorites else 'favorites' -%}
+            <div class="column {% if is_favorites %}is-one-third{% else %}is-half{% endif %}">
+                <div class="card{% if tea_item.is_empty %} no-tea-left{% endif %}">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="is-pulled-right card-buttons">
+                                {# Soon
+                                <a href="#"
+                                   class="card-reorder-handle is-hidden-mobile tooltip is-tooltip-left"
+                                   title="Réordonner"
+                                   aria-label="Réordonner"
+                                   data-tooltip="Réordonner">
+                                    <span class="fa fa-reorder"></span>
                                 </a>
-                            </footer>
+                                #}
+                                <a
+                                    href="{{ url_for('toggle_empty_tea_in_list', tea_id=tea.id, cookie_key=cookie_key, next=url_for('homepage')) }}"
+                                    class="tooltip is-tooltip-left"
+                                    title="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous"
+                                    aria-label="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous"
+                                    data-tooltip="Marquer ce thé comme {% if tea_item.is_empty %}non-{% endif %}épuisé chez vous">
+                                    <span class="fa fa-trash{% if not tea_item.is_empty %}-o{% endif %}"></span>
+                                </a>
+                                <a
+                                    href="{{ url_for('remove_tea_from_list', tea_id=tea.id, cookie_key=cookie_key, next=url_for('homepage')) }}"
+                                    class="tooltip is-tooltip-left"
+                                    title="Supprimer le thé des favoris"
+                                    aria-label="Supprimer le thé des favoris"
+                                    data-tooltip="Supprimer le thé des favoris">
+                                    <span class="fa fa-close"></span>
+                                </a>
+                            </div>
+                            <h3>
+                                {%- if is_favorites -%}
+                                    <span class="fa fa-star" aria-label="Thé dans vos favoris" title="Thé dans vos favoris"></span>
+                                {%- endif -%}
+                                <a href="{{ url_for_tea(tea) }}">{{ tea.name }}</a>
+                                {%- if tea_item.is_empty -%}
+                                    <span class="tag-empty">Épuisé</span>
+                                {%- endif -%}
+                            </h3>
+                            <p>{{ tea.description }}</p>
+                            <ul class="tea-tips-list">
+                                {{ tea_utils.list_tea_tips(tea) }}
+                            </ul>
                         </div>
                     </div>
-                {% endfor %}
+                    <footer class="card-footer">
+                        <a class="card-footer-item button-progress" data-time="{{ tea.tips_duration }}" data-name="{{ tea.name }}">
+                            <span class="button-progress-label">Lancer l'infusion</span>
+                            <span class="button-progress-bar"></span>
+                        </a>
+                    </footer>
+                </div>
             </div>
-        {% else %}
+        {% endfor %}
+    </div>
+    {% elif message_if_empty %}
+        <article class="message is-primary">
+            <div class="message-body">
+                Cette liste ne contient aucun thé.
+            </div>
+        </article>
+    {% endif %}
+{% endmacro %}
+
+
+{% block content %}
+{% if favorites_list_teas or not lists_teas %}
+<section id="favorite-teas" class="section">
+    <div class="container">
+        {% if favorites_list_teas %}
+            <h2 class="sr-only">Vos thés favoris</h2>
+            {{ render_tea_list(favorites_list_teas, is_favorites=True) }}
+        {% elif not lists_teas %}
             {{ promo.mtp_promo(vendors) }}
         {% endif %}
     </div>
 </section>
+{% endif %}
+
+{% if lists_teas %}
+    <section id="lists-of-teas" class="section">
+        <div class="container">
+            <h2><span>Vos listes</span></h2>
+            <div class="columns">
+                <aside class="menu column is-3 is-hidden-mobile">
+                    <ul class="menu-list">
+                        {% for list in lists_teas %}
+                            <li>
+                                <a
+                                    href="{{ url_for('switch_last_viewed_list', cookie_key=list.cookie_key) }}"
+                                    class="teas-list-handle{% if (not last_viewed_list_key and loop.index == 1) or (list.cookie_key == last_viewed_list_key) %} is-active{% endif %}"
+                                    data-list="{{ list.cookie_key }}">
+                                    {{ list.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </aside>
+                <article class="column is-9">
+                    {% for list in lists_teas %}
+                        <div
+                            class="teas-list-content{% if (last_viewed_list_key and list.cookie_key != last_viewed_list_key) %} is-hidden{% endif %}"
+                            data-list="{{ list.cookie_key }}">
+                            {{ render_tea_list(list, message_if_empty=True) }}
+                        </div>
+                    {% endfor %}
+                </article>
+            </div>
+        </div>
+    </section>
+{% endif %}
 {% endblock %}

@@ -103,7 +103,7 @@ class TeaVendorImporter(object):
 
         :return: TeaVendor
         """
-        pass
+        raise NotImplementedError()
 
     def prepare_references(self):
         """
@@ -115,14 +115,14 @@ class TeaVendorImporter(object):
         :return: The number of steps of the retrieve_references method,
                  or None if nothing has been retrieved.
         """
-        pass
+        raise NotImplementedError()
 
     def retrieve_references(self):
         """
         Retrieves the references. Yields each time a step (defined in the previous
         method) is achieved (e.g. one page analyzed).
         """
-        pass
+        raise NotImplementedError()
 
     def analyze_references(self):
         """
@@ -131,7 +131,7 @@ class TeaVendorImporter(object):
         :return: a tuple with the number of references found, and a list
                  of errored references (strings)
         """
-        pass
+        raise NotImplementedError()
 
     def crawl_teas(self):
         """
@@ -139,7 +139,7 @@ class TeaVendorImporter(object):
         containing the keys in the Tea model, and a list with the tags of this tea
         (instances of the TypeOfATea, see self.get_tea_types()).
         """
-        pass
+        raise NotImplementedError()
 
     def get_crawl_errors(self):
         """
@@ -148,7 +148,7 @@ class TeaVendorImporter(object):
 
         :return: List of errors.
         """
-        pass
+        raise NotImplementedError()
 
     def get_retrieved_internal_ids(self):
         """
@@ -160,7 +160,7 @@ class TeaVendorImporter(object):
 
         :return: a list containing the retrieved teas internal IDs.
         """
-        pass
+        raise NotImplementedError()
 
 
 def get_crawling_session():

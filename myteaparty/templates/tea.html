@@ -4,6 +4,7 @@
 
 {% block javascripts %}
     <script type="text/javascript" src="{{ url_for('static', filename='assets/js/time-counters.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='assets/js/teas.js') }}"></script>
 {% endblock %}
 
 {% block social_tags %}
@@ -85,17 +86,112 @@
     </form>
 {% endblock %}
 
-{% block menu_right_mobile %}
-    {{ self.menu_right() }}
-{% endblock %}
+
+{% macro tea_list_selector(tea_lists, teas_lists_containing, mobile=False) -%}
+    <section class="tea-list-selector {% if not mobile %}dropdown is-hoverable is-right is-up{% else %}tea-list-selector-mobile{% endif %}">
+        {% if mobile %}
+            <a class="icon is-large" href="#" id="open-modal-lists">
+                <span class="fa fa-list fa-2x"></span>
+            </a>
+        {% else %}
+            <div class="dropdown-trigger button is-primary is-medium">
+                <dfn aria-haspopup="true" aria-controls="dropdown-menu-lists">
+                    <span class="icon">
+                        <span class="fa fa-list"></span>
+                    </span>
+                    <span class="icon is-small">
+                        <span class="fa fa-angle-up" aria-hidden="true"></span>
+                    </span>
+                </dfn>
+            </div>
+        {% endif %}
+
+        {% macro _tea_lists_list(tea_lists, teas_lists_containing, link_class, icon_class='') %}
+            {% for tea_list in tea_lists %}
+                <a
+                    href="{{ url_for('toggle_tea_in_list', tea_id=tea.id, cookie_key=tea_list.cookie_key) }}"
+                    class="{{ link_class }} toggle-list-link">
+                    <span
+                        class="{{ icon_class }} fa fa-check{% if tea_list.id not in tea_lists_containing %} list-unchecked{% endif %}"
+                        aria-hidden="true"></span>
+                    {{ tea_list.name }}
+                </a>
+            {% else %}
+                <div class="{{ link_class }}">
+                    <article class="tea-list-selector-empty">
+                        <h5>Vous n'avez pas encore de liste</h5>
+                        <p>
+                            Les listes sont un moyen pratique de mettre de côté tous les
+                            thés que vous avez chez vous, ou au bureau, par exemple.<br />
+                            Créez autant de listes que vous le voulez — les thés dans des listes
+                            seront affichés de manière pratique et accessible sur la page d'accueil !
+                        </p>
+                    </article>
+                </div>
+            {% endfor %}
+        {% endmacro %}
+
+        {% if mobile %}
+            <div class="modal" id="modal-lists">
+                <div class="modal-background"></div>
+                <div class="modal-content">
+                    <nav class="panel">
+                        <p class="panel-heading">
+                            Ajouter à une liste
+                        </p>
+                        {{ _tea_lists_list(tea_lists, teas_lists_containing, 'panel-block', 'panel-icon') }}
+                        <div class="panel-block">
+                            <form action="{{ url_for('create_and_add_to_list', tea_id=tea.id) }}">
+                                <div class="field has-addons">
+                                    <div class="control is-expanded">
+                                        <input type="text" class="input is-expanded" name="name" placeholder="Nouvelle liste…" required="true" />
+                                    </div>
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary">
+                                            <span class="fa fa-arrow-right"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="panel-block">
+                            <button class="button is-link is-fullwidth modal-lists-close">
+                                Terminé
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+                <button class="modal-close is-large" aria-label="close"></button>
+            </div>
+        {% else %}
+            <div class="dropdown-menu" id="dropdown-menu-lists" role="menu">
+                <div class="dropdown-content">
+                    {{ _tea_lists_list(tea_lists, teas_lists_containing, 'dropdown-item') }}
+                    <hr class="dropdown-divider" />
+                    <div class="dropdown-item">
+                        <form action="{{ url_for('create_and_add_to_list', tea_id=tea.id) }}" class="field">
+                            <div class="control has-icons-right">
+                                <input type="text" class="input" name="name" placeholder="Nouvelle liste…" required="true" />
+                                <span class="icon is-small is-right" title="Appuyez sur Enter pour valider">
+                                    <i class="fa fa-level-down fa-rotate-90"></i>
+                                </span>
+                            </div>
+                            <input type="submit" class="is-hidden" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+{% endmacro %}
 
 
 {% block hero_attributes %}id="hero-tea"{% endblock %}
 
 {% block hero_body %}
-{%- set list_tooltip = "Retirer de ma liste de thés" if is_in_list else "Ajouter à ma liste de thés" -%}
+{%- set list_tooltip = "Retirer de mes favoris" if is_in_list else "Ajouter à mes favoris" -%}
 {%- set list_icon = "fa-star" if is_in_list else "fa-star-o" -%}
-{%- set list_link = url_for('remove_tea_from_list', tea_id=tea.id) if is_in_list else url_for('add_tea_to_list', tea_id=tea.id) -%}
+{%- set list_link = url_for('remove_tea_from_list', tea_id=tea.id, cookie_key='favorites') if is_in_list else url_for('add_tea_to_list', tea_id=tea.id, cookie_key='favorites') -%}
 <div class="hero-body">
     <div class="container">
         <div class="columns is-vcentered">
@@ -112,7 +208,10 @@
                 </h1>
                 <h2 class="subtitle">{{ tea.description }}</h2>
                 <aside class="is-hidden-tablet" aria-label="{{ list_tooltip }}">
-                    <a class="icon is-large" href="{{ list_link }}"><span class="fa {{ list_icon }}"></span></a>
+                    <a class="icon is-large" href="{{ list_link }}">
+                        <span class="fa {{ list_icon }} fa-2x"></span>
+                    </a>
+                    {{ tea_list_selector(tea_lists, teas_lists_containing, mobile=True) }}
                 </aside>
             </div>
             <div class="column is-narrow tea-title-aside">
@@ -212,23 +311,28 @@
                         {%- endif -%}
                     </article>
 
-                    <aside class="tea-source">
-                        <p>
-                            Ce thé est une création de <a href="{{ tea.link }}" rel="nofollow">{{ tea.vendor.name }}</a>.
-                            {% if tea.price -%}
-                                Il est vendu {{ tea.price|int }} €
-                                {%- if tea.price_unit %}
-                                    {% if tea.price_unit[:2].isdigit() %}pour{% else %}par{% endif %} {{ tea.price_unit }}
-                                {%- endif -%}.
-                            {%- endif -%}
-                            <br />
-                            <span class="last-update">
-                                Les données de cette page ont été mises à jour le {{ tea.updated.strftime('%d/%m/%Y') }}.
-                                {% if tea.deleted %}
-                                <br />Ce thé a été depuis supprimé du site web de {{ tea.vendor.name }}. Il est conservé ici à titre d'archive.
-                                {% endif %}
-                            </span>
-                        </p>
+                    <aside class="tea-source columns">
+                        <div class="column is-10">
+                            <p>
+                                Ce thé est une création de <a href="{{ tea.link }}" rel="nofollow">{{ tea.vendor.name }}</a>.
+                                {% if tea.price -%}
+                                    Il est vendu {{ tea.price|int }} €
+                                    {%- if tea.price_unit %}
+                                        {% if tea.price_unit[:2].isdigit() %}pour{% else %}par{% endif %} {{ tea.price_unit }}
+                                    {%- endif -%}.
+                                {%- endif -%}
+                                <br />
+                                <span class="last-update">
+                                    Les données de cette page ont été mises à jour le {{ tea.updated.strftime('%d/%m/%Y') }}.
+                                    {% if tea.deleted %}
+                                    <br />Ce thé a été depuis supprimé du site web de {{ tea.vendor.name }}. Il est conservé ici à titre d'archive.
+                                    {% endif %}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="column is-2 is-hidden-mobile">
+                            {{ tea_list_selector(tea_lists, teas_lists_containing) }}
+                        </div>
                     </aside>
                 </div>
             </div>

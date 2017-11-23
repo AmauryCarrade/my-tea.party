@@ -35,7 +35,7 @@ def generate_thumbnails_command(regenerate, directory):
         files_all_ok = all([(file_dir / get_external_filename(file, file_format)).exists() for file_format in formats])
 
         if not files_all_ok or regenerate:
-            click.echo(f'Generating thumbnails for {file.name}…{" [regenerated]" if regenerate else ""}')
+            click.echo(f'Generating thumbnails for {file.name}…{" [regenerated]" if regenerate and files_all_ok else ""}')
             generate_thumbnails(file)
 
     click.echo('Done.')

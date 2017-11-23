@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for
 from playhouse.flask_utils import get_object_or_404, PaginatedQuery
 
-from .lists import is_tea_in_active_list
+from .lists import is_tea_in_favorites_list, get_tea_lists_from_request, get_lists_containing_tea
 from ..model import Tea, TeaVendor, TeaType, TypeOfATea
 from ..teaparty import app
 
@@ -14,7 +14,8 @@ def tea(tea_vendor, tea_slug):
 
     tea_types = (TeaType.select(TeaType.name, TeaType.slug)
                  .join(TypeOfATea)
-                 .where(TypeOfATea.tea == tea))
+                 .where(TypeOfATea.tea == tea)
+                 .order_by(TeaType.is_origin, TeaType.order))
 
     tea_tips_short = ''
     if tea.tips_mass:
@@ -32,11 +33,17 @@ def tea(tea_vendor, tea_slug):
     if tea_tips_short:
         tea_tips_short += '.'
 
-    return render_template('tea.html',
-                           tea=tea,
-                           tea_tips_short=tea_tips_short,
-                           tea_types=tea_types,
-                           is_in_list=is_tea_in_active_list(tea))
+    tea_lists = get_tea_lists_from_request()
+
+    return render_template(
+        'tea.html',
+        tea=tea,
+        tea_tips_short=tea_tips_short,
+        tea_types=tea_types,
+        is_in_list=is_tea_in_favorites_list(tea),
+        tea_lists=tea_lists,
+        tea_lists_containing=[tea_list.id for tea_list in get_lists_containing_tea(tea_lists, tea)]
+    )
 
 
 @app.route('/teas')
