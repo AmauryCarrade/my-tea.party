@@ -17,14 +17,15 @@ _cookies_properties = {
 }
 
 
-def create_tea_list(name=None):
+def create_tea_list(name=None, is_favorites=False):
     '''
     Creates a new teas list, with the provided name or a default one.
     '''
     return TeaList.create(
         name=name or app.config['LISTS_DEFAULT_NAME'],
         cookie_key=str(uuid.uuid4().hex).upper().replace('-', ''),
-        creator_ip=request.remote_addr
+        creator_ip=request.remote_addr,
+        is_favorites=is_favorites
     )
 
 
@@ -69,7 +70,7 @@ def set_empty_in_list(tea_list, tea, empty=None):
 
 def set_favorites_list(response, favorites_list):
     '''
-    Sets the cookies to refer the active list.
+    Sets the cookies to refer the favorites list.
     '''
     response.set_cookie(app.config['COOKIE_FAVORITES_LIST'], favorites_list.cookie_key, **_cookies_properties)
 
@@ -109,8 +110,8 @@ def get_tea_lists_from_request():
 def get_tea_list_from_cookie_key(cookie_key, create=True, abort_if_not_found=True):
     '''
     Returns an user's list from its cookie key (UUID).
-    If the cookie key is 'favorites', gets or creates the favorites list.
-    Returns None if the list does not exists.
+    If the cookie key is 'favorites', gets or creates (if create=True) the favorites list.
+    Returns None if the list does not exists, or aborts to a 404 error.
     '''
     if cookie_key == 'favorites':
         return get_favorites_list_from_request(create=create)
@@ -145,11 +146,17 @@ def get_favorites_list_from_request(create=True):
             favorites_list = None
 
     if not favorites_list and create:
-        favorites_list = create_tea_list(name=app.config['LISTS_FAVORITES_NAME'])
+        favorites_list = create_tea_list(name=app.config['LISTS_FAVORITES_NAME'], is_favorites=True)
 
         @after_request
         def set_favorite_cookie(response):
             set_favorites_list(response, favorites_list)
+
+    # If someone tries to manipulate the cookies to put a normal list
+    # into the favs cookie
+    if favorites_list is not None and not favorites_list.is_favorites:
+        favorites_list.is_favorites = True
+        favorites_list.save()
 
     return favorites_list
 
@@ -332,18 +339,26 @@ def switch_last_viewed_list(cookie_key):
 # TODO BELOW - switch to multi-lists
 @app.route('/sync')
 def sync_list():
-    active_list = get_tea_list_from_request()
+    tea_lists = get_tea_lists_from_request()
+    tea_favorites_list = get_favorites_list_from_request()
+    all_lists = tea_lists + [tea_favorites_list]
+
     now = datetime.now()
 
-    if ('regen' in request.args
-            or active_list.share_key is None
-            or active_list.share_key_valid_until is None
-            or active_list.share_key_valid_until < now):
-        active_list.share_key = _gen_list_share_key()
-        active_list.share_key_valid_until = now + timedelta(hours=app.config['SHARE_KEY_EXPIRES_AFTER'])
-        active_list.save()
+    for tea_list in all_lists:
+        if (('regen' in request.args and (not 'list' in request.args or request.args.get('list') == tea_list.cookie_key))
+                or tea_list.share_key is None
+                or tea_list.share_key_valid_until is None
+                or tea_list.share_key_valid_until < now):
+            tea_list.share_key = _gen_list_share_key()
+            tea_list.share_key_valid_until = now + timedelta(hours=app.config['SHARE_KEY_EXPIRES_AFTER'])
+            tea_list.save()
 
-    return render_template('sync.html', active_list=active_list)
+    return render_template(
+        'sync.html',
+        tea_lists=tea_lists,
+        tea_favorites_list=tea_favorites_list
+    )
 
 
 @app.route('/s/<share_key>')
@@ -355,20 +370,31 @@ def sync_list_newdevice(share_key):
     except TeaList.DoesNotExist:
         abort(404)
 
-    if 'confirm' in request.args:
+    is_registered = is_list_registered_for_user(new_list)
+    if not is_registered:
+        is_registered = get_favorites_list_from_request(create=False) == new_list
+
+    if 'confirm' in request.args and not is_registered:
+        register_method = add_to_registered_lists
+
+        is_favorites = new_list.is_favorites
+        replace_favorites = request.args.get('replace_favorites', 'True').lower() != 'false'
+
+        if is_favorites and replace_favorites:
+            register_method = set_favorites_list
+
         @after_request
         def set_active_cookie(response):
-            set_active_list(response, new_list)
+            register_method(response, new_list)
 
         return render_template('sync_newdevice.html', new_list=new_list, done=True)
 
-    elif is_list_registered_for_user(new_list):
+    elif is_registered:
         return render_template(
             'sync_newdevice.html',
             new_list=new_list,
             done=False,
-            already_registered=True,
-            already_registered_and_active=get_tea_list_from_request().id == new_list.id
+            already_registered=True
         )
 
     new_list_teas_sample, new_list_teas_count = get_teas_in_list(new_list, limit=5)
@@ -379,5 +405,6 @@ def sync_list_newdevice(share_key):
         tea_sample=new_list_teas_sample,
         teas_count=new_list_teas_count,
         done=False,
-        already_registered=False
+        already_registered=False,
+        current_favorites_list=get_favorites_list_from_request(create=False)
     )

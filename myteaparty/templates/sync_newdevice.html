@@ -41,56 +41,77 @@
             {% if done %}
                 <aside class="message is-success">
                     <div class="message-body">
-                        La liste a bien été ajoutée à votre compte.
+                        La liste a bien été ajoutée à cet appareil.
                     </div>
                 </aside>
             {% elif already_registered %}
                 <aside class="message is-warning">
                     <div class="message-body">
                         Cette liste est déjà enregistrée sur cet appareil.
-                        {%- if not already_registered_and_active %}
-                            Pour l'utiliser, sélectionnez-là dans le menu «&nbsp;Mes listes&nbsp;» en bas de page.
-                        {%- endif -%}
                     </div>
                 </aside>
             {% else %}
                 <p>Vous êtes sur le point d'ajouter la liste suivante à votre appareil.</p>
 
+                {% if new_list.is_favorites and current_favorites_list %}
+                <p>
+                    Il s'agit d'une liste de favoris — la synchroniser va remplacer la liste actuelle de favoris sur cet appareil.
+                </p>
+                {% endif %}
+
                 <div class="columns">
                     <div class="column is-half is-offset-one-quarter">
                         <article class="panel">
+                            {% set remaining_teas = teas_count - tea_sample|length %}
+                            {% set s = 's' if remaining_teas > 1 else '' %}
+
                             <p class="panel-heading">
+                                {% if new_list.is_favorites %}
+                                    <span class="fa fa-star"></span>
+                                {% endif %}
                                 {{ new_list.name }}
                             </p>
                             <div class="panel-block">
                                 Une liste créée le {{ new_list.created_at.strftime('%d/%m/%Y à %H:%M') }}.<br />
-                                Voici un aperçu des thés qu'elle contient…
+                                Voici {% if remaining_teas > 0 %}un aperçu des{% else %}le{{ s }}{% endif %} thé{{ s }} qu'elle contient…
                             </div>
                             {% for tea in tea_sample %}
                                 <a class="panel-block is-active" href="{{ url_for_tea(tea.tea) }}">
                                     <span class="panel-icon">
-                                        <i class="fa fa-coffee"></i>
+                                        <span class="fa fa-coffee"></span>
                                     </span>
                                     {{ tea.tea.name }}
                                 </a>
-                                {% endfor %}
-                            <div class="panel-block other-teas">
-                                {% set remaining_teas = teas_count - tea_sample|length %}
-                                {% set s = 's' if remaining_teas > 1 else '' %}
-                                …et {{ remaining_teas }} autre{{ s }} thé{{ s }}.
-                            </div>
+                            {% endfor %}
+                            {% if remaining_teas > 0 %}
+                                <div class="panel-block other-teas">
+                                    …et {{ remaining_teas }} autre{{ s }} thé{{ s }}.
+                                </div>
+                            {% endif %}
                         </article>
                     </div>
                 </div>
 
                 <div class="columns">
                     <div class="column is-3 is-offset-one-quarter">
-                        <a href="{{ url_for('sync_list_newdevice', share_key=new_list.share_key, confirm=True) }}" class="button is-fullwidth is-primary is-medium">Ajouter la liste</a>
+                        <a href="{{ url_for('sync_list_newdevice', share_key=new_list.share_key, confirm=True) }}" class="button is-fullwidth is-primary is-medium">
+                            {% if new_list.is_favorites %}
+                                Utiliser comme liste de favoris
+                            {% else %}
+                                Ajouter la liste
+                            {% endif %}
+                        </a>
                     </div>
                     <div class="column is-3">
                         <a href="{{ url_for('homepage') }}" class="button is-fullwidth is-medium">Annuler</a>
                     </div>
                 </div>
+
+                {% if new_list.is_favorites %}
+                    <p class="add-without-replacing-favorites">
+                        Vous pouvez aussi <a href="{{ url_for('sync_list_newdevice', share_key=new_list.share_key, confirm=True, replace_favorites=False) }}">ajouter la liste comme une liste normale sans remplacer les favoris</a>.
+                    </p>
+                {% endif %}
             {% endif %}
         </div>
     </div>

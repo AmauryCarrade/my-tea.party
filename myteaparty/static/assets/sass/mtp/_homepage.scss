@@ -141,7 +141,7 @@
     padding-bottom: 0;
 }
 
-#lists-of-teas {
+#lists-of-teas, #sync-list {
     h2 {
         margin-bottom: 1.4rem;
 
@@ -170,6 +170,10 @@
             &:not(.is-active):hover {
                 color: $page-background;
             }
+        }
+
+        .menu-label {
+            color: #efefef;
         }
     }
 }
