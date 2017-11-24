@@ -35,9 +35,8 @@
             var duration = parseInt(target.dataset.time);
             var started = Date.now();
 
-            var title = target.dataset.name;
-            if (!title)
-                title = 'My Tea Party';
+            var title = target.dataset.name ? target.dataset.name : 'My Tea Party';
+            var tracking_name = target.dataset.name ? target.dataset.name : 'Unknown tea'
 
             var label = target.getElementsByClassName('button-progress-label')[0];
             var bar = target.getElementsByClassName('button-progress-bar')[0];
@@ -72,6 +71,11 @@
                     }
 
                     clearInterval(timer);
+
+                    if (_paq)
+                    {
+                        _paq.push(['trackEvent', 'Tea', 'Brew-end', tracking_name]);
+                    }
                 }
                 else
                 {
@@ -79,6 +83,11 @@
                     bar.style.width = percentage + '%';
                 }
             }, 100);
+
+            if (_paq)
+            {
+                _paq.push(['trackEvent', 'Tea', 'Brew', tracking_name]);
+            }
         });
     }
 

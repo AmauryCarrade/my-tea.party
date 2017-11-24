@@ -8,6 +8,17 @@
     {% endif %}
 {% endblock %}
 
+{% block javascripts %}
+    {% if done %}
+        <script type="text/javascript">
+            if (_paq)
+            {
+                _paq.push(['trackEvent', 'List', 'AddToDevice', {{ new_list.name|tojson }}]);
+            }
+        </script>
+    {% endif %}
+{% endblock %}
+
 
 {% block hero_body %}
 <div class="hero-body">

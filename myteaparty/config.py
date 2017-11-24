@@ -53,6 +53,12 @@ COOKIE_FAVORITES_LIST = 'mtp_tea_favorites_list'
 COOKIE_LAST_VIEWED_LIST = 'mtp_tea_last_viewed_list'
 
 
+# Piwik support
+
+PIWIK_URL = ''  # Without trailing slash, e.g. '//analytics.example.com'
+PIWIK_SITE_ID = ''
+
+
 # A random secret key
 
 SECRET_KEY = 'some random string here'
