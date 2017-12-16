@@ -29,10 +29,10 @@ def search_for_tea(search_query, paginate_by=0, page=1):
                       fn.IF(Tea.vendor_internal_id == word, app.config['SEARCH_WEIGHTS']['vendor_code'], 0) +
                       fn.IF(Tea.description.contains(word), app.config['SEARCH_WEIGHTS']['desc'], 0) +
                       fn.IF(Tea.long_description.contains(word), app.config['SEARCH_WEIGHTS']['ldesc'], 0))
-        where_clause &= (Tea.name.contains(word) |
-                         Tea.vendor_internal_id == word |
-                         Tea.description.contains(word) |
-                         Tea.long_description.contains(word))
+        where_clause &= ((Tea.name.contains(word)) |
+                         (Tea.vendor_internal_id == word) |
+                         (Tea.description.contains(word)) |
+                         (Tea.long_description.contains(word)))
 
     teas = (Tea
             .select(
