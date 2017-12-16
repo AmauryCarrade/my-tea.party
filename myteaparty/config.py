@@ -19,6 +19,7 @@ TEA_IMPORTERS_PACKAGE = 'myteaparty.commands.tea_importers'
 # The weight of the fields when searching for a tea using keywords.
 SEARCH_WEIGHTS = {
     'name': 20,
+    'vendor_code': 10,
     'desc': 10,
     'ldesc': 5
 }
