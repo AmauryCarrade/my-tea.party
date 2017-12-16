@@ -147,7 +147,7 @@
                 <article class="column is-9">
                     {% for list in lists_teas %}
                         <div
-                            class="teas-list-content{% if (last_viewed_list_key and list.cookie_key != last_viewed_list_key) %} is-hidden{% endif %}"
+                            class="teas-list-content{% if (last_viewed_list_key and list.cookie_key != last_viewed_list_key) or (not last_viewed_list_key and loop.index != 1) %} is-hidden{% endif %}"
                             data-list="{{ list.cookie_key }}">
                             {{ render_tea_list(list, message_if_empty=True) }}
                         </div>
