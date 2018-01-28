@@ -155,7 +155,7 @@ def get_favorites_list_from_request(create=True):
         def set_favorite_cookie(response):
             set_favorites_list(response, favorites_list)
 
-    # If someone tries to manipulate the cookies to put a normal list
+    # If someone tries to manipulate the cookies to put a normal list
     # into the favs cookie
     if favorites_list is not None and not favorites_list.is_favorites:
         favorites_list.is_favorites = True
@@ -248,6 +248,7 @@ def get_last_viewed_list_key():
     '''
     return request.cookies.get(app.config['COOKIE_LAST_VIEWED_LIST'], '')
 
+
 def update_last_viewed_list_key(last_viewed_list):
     '''
     Updates the last-viewed list in the cookie.
@@ -289,6 +290,7 @@ def remove_tea_from_list(cookie_key, tea_id):
 
     return _handle_response(tea, in_list=True)
 
+
 @app.route('/lists/<cookie_key>/toggle/<int:tea_id>', methods=['GET', 'POST'])
 def toggle_tea_in_list(cookie_key, tea_id):
     tea = get_object_or_404(Tea, Tea.id == tea_id)
@@ -303,6 +305,7 @@ def toggle_tea_in_list(cookie_key, tea_id):
         in_list = True
 
     return _handle_response(tea, in_list=in_list)
+
 
 @app.route('/lists/create_and_add/<int:tea_id>', methods=['GET', 'POST'])
 def create_and_add_to_list(tea_id):

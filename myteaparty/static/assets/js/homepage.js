@@ -33,7 +33,8 @@
                 }
             }
 
-            document.cookie = window.mtp_config['cookies']['last_viewed_list'] + '=' + this.dataset.list;
+            // 2 649 024 000 seconds = 84 years
+            document.cookie = window.mtp_config['cookies']['last_viewed_list'] + '=' + this.dataset.list + ';max-age=2649024000;secure';
         };
     }
 })();
